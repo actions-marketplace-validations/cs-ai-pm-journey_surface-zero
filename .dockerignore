@@ -1,0 +1,13 @@
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.git
+.env
+
+# Runtime state belongs on the mounted Fly volume, not baked into the image.
+# The fixture label set under data/label_sets stays, that's static config, not state.
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/kill_switch.json

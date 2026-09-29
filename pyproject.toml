@@ -1,0 +1,33 @@
+[project]
+name = "surface-zero"
+version = "0.1.0"
+description = "Advisory-only GitHub issue triage agent (Gate A). Ledger-first, minimal authority."
+readme = "README.md"
+authors = [
+    { name = "Adam", email = "Adamsaulters@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "anthropic>=1.4.0",
+    "fastapi>=0.141.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.13.5",
+    "pyjwt[crypto]>=2.10.0",
+    "python-dotenv>=1.2.3",
+    "uvicorn>=0.52.4",
+]
+
+[project.scripts]
+surface-zero = "surface_zero.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

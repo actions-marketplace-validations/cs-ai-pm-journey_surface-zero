@@ -1,0 +1,13 @@
+{
+  "repo": "fixture/example-repo",
+  "note": "Placeholder label vocabulary used for Monday/Tuesday build work while maintainer outreach is unresolved. Not a real target. Replace with the confirmed target's actual labels before Wednesday's live path, pulled from the GitHub API, not hand-typed.",
+  "labels": [
+    {"name": "bug", "description": "Something is broken or behaving incorrectly."},
+    {"name": "enhancement", "description": "A request for new functionality or an improvement to existing behavior."},
+    {"name": "documentation", "description": "Docs are missing, unclear, or incorrect."},
+    {"name": "question", "description": "The reporter is asking how to do something, not reporting a defect or requesting a feature."},
+    {"name": "duplicate", "description": "This issue substantially restates an existing open or closed issue."},
+    {"name": "wontfix", "description": "Acknowledged but the maintainer has decided not to act on it."},
+    {"name": "good first issue", "description": "Well-scoped and suitable for a first-time contributor."}
+  ]
+}

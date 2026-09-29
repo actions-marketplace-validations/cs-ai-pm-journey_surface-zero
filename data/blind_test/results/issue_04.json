@@ -1,0 +1,45 @@
+{
+  "run": {
+    "run_id": "6c1289c553de4430b51a213b63a0654f",
+    "idempotency_key": "advise-07207105753d",
+    "event_type": "issue.opened",
+    "target": "ForgeAS/everForge",
+    "status": "succeeded",
+    "started_at": "2026-09-23T17:57:33.731+00:00",
+    "finished_at": "2026-09-23T17:57:36.461+00:00",
+    "latency_ms": 2727.9416659730487,
+    "request": {
+      "body": "hey is anyone else losing saved items in the library? i processed a few youtube links 2 days ago and tagged all the market opportunities. came back today to check my library and half the items i parsed are gone and some of the saved tags reverted back to default.\n\nnot sure if my local database got wiped or if syncing is broken. is this a known bug or is there something wrong on my end? running on chrome win 11.",
+      "candidates": [
+        {
+          "body": "opened everforge put youtube link in the input box and clicked process. screen went completely white. tried restarting app same thing happened again. literally unusable right now please fix asap i need to save this workflow video",
+          "number": 1,
+          "title": "app crashes when parsing yt video link"
+        },
+        {
+          "body": "Hi team,\n\nI pasted a reddit thread url into EverForge and hit parse. The summary loaded fine, but when I click the \"Extract Workflows\" button at the bottom right, nothing happens at all. There's no loading spinner or error popup.\n\nI tried refreshing the browser tab, clearing my cache, and trying a different Reddit post, but clicking that button still does nothing. Am I doing something wrong or is the button disabled? Thanks!",
+          "number": 2,
+          "title": "\"Extract Workflows\" button not responding"
+        },
+        {
+          "body": "Hey guys, yesterday around 4:30 PM EST I forwarded about 8 Reddit posts from r/automation and r/SaaS into EverForge. It extracted a bunch of awesome AI workflow tidbits and 3 potential market openings for a niche CRM tool. I carefully organized them, edited a few titles, and saved them into my \"Q3 SaaS Ideas\" folder in the library.\n\nThis morning I logged back in around 9 AM to review them for a meeting with my cofounder and the entire Q3 folder is empty?? Actually it shows 2 items now but they are old items from last week and the titles are changed back to \"Untitled YouTube Parsing #14\".\n\nI didn't log out or change accounts. Where did my parsed data go? Is there a backup or version history? I spent almost 3 hours sorting those workflows yesterday. Please tell me they aren't gone forever.",
+          "number": 3,
+          "title": "Saved Reddit automation tidbits from yesterday completely vanished / library reset?"
+        }
+      ],
+      "number": 4,
+      "title": "Is saved library items disappearing a known issue?"
+    },
+    "response": {
+      "duplicate_of": 3,
+      "duplicate_rationale": "Both issues describe saved library items and tagged content vanishing after being processed, pointing to the same underlying data loss/sync bug.",
+      "rationale": "User reports saved library items and tags disappearing/reverting, indicating a data persistence or sync malfunction rather than a feature request.",
+      "suggested_label": "bug"
+    },
+    "outbound_action": "none",
+    "error_type": null,
+    "error_message": null,
+    "schema_version": 1
+  },
+  "duplicate": false
+}

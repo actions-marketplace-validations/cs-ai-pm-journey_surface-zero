@@ -1,0 +1,308 @@
+{
+  "36": {
+    "title": "Blank screen when clicking on \"Library\" tab from main menu",
+    "body": "everytime i try to open my library view from the left menu bar the app just goes completely blank. white screen with nothing on it. tried reloading and clearing browser cache still crashes immediately when clicking library.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports a reproducible crash (blank white screen) when clicking the Library tab, indicating something isn't working as expected.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "37": {
+    "title": "Navigating to My Saved Library crashes application completely",
+    "body": "Hey guys, I keep running into a pretty big issue today. Whenever I click the \"Library\" button on the navigation sidebar, the app completely breaks and shows a plain white screen. I have to hit the back button or re-type the URL to get back to the home dashboard. Is anyone else experiencing this when opening their saved library? Running Chrome on macOS Sonoma.\n\n",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports the application crashing to a white screen when navigating to the Library page, which is a functional defect matching \"Something isn't working.\"",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "38": {
+    "title": "Save to Folder\" dropdown button in parse summary modal does literally nothing",
+    "body": "I parsed a reddit thread and got some great workflow insights. I tried clicking the \"Save to Folder\" button at the bottom of the summary modal to organize it into my \"AI Tools\" folder. I click it multiple times and literally nothing happens. No drop down menu opens, no modal pop up, no error message. Just completely un-clickable.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe \"Save to Folder\" button is unresponsive and fails to open any dropdown or modal, indicating broken functionality rather than a missing feature.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "39": {
+    "title": "Custom tags disappeared from all saved library items",
+    "body": "Logged in today and noticed that ALL my custom tags (like \"High Priority\", \"SaaS Idea\", \"No-Code Workflow\") that I applied to about 40 items over the last few weeks are completely gone. The items are still in my library, but all the tags are blank now. If I re-add a tag and refresh the page, it disappears again.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports that previously saved custom tags on library items have vanished and newly added tags fail to persist after a refresh, indicating a data persistence bug rather than a feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "40": {
+    "title": "Are custom tags broken / resetting for anyone else?",
+    "body": "hi is this a known issue? I spent a bunch of time taggging my saved reddit and yt extractions yesterday with custom categories and today every single tag is gone. tried re-tagging one item but after reloading the page the tags disappear again. is tag persistence currently down?",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports that custom tags fail to persist after reloading the page, which describes something in the app that isn't working as expected rather than a feature request or question.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "41": {
+    "title": "Feature Request: Generate PDF summary report / Public share link for clients",
+    "body": "Right now when I extract market openings and AI workflows from a YouTube video or Reddit post, if I want to share it with my client or business partner I have to manually copy-paste everything into a Notion doc or Google Doc and format it. It takes forever.\n\nIt would be amazing if we could click a \"Share\" button to generate a clean PDF summary or a public read-only link to the parsed workflow card. That way we can directly forward polished reports to stakeholders without extra manual work.",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThis is a feature request for new functionality (PDF export / public share links) rather than a bug report or existing behavior fix.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "42": {
+    "title": "Need High Contrast mode / Adjustable font size option for low vision",
+    "body": "Hello, I have low vision and am finding it very difficult to read the extracted workflow text cards in EverForge. The grey text on light grey background has very low contrast, and the font size is quite small with no option in settings to scale it up.\n\nCould you please add a High Contrast theme option or a font size scaling setting (Small / Medium / Large)? Currently I have to zoom my entire browser to 150% which breaks the page layout. Thank you!",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThis is a feature request for accessibility improvements (high contrast theme, font scaling) rather than a bug report.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "43": {
+    "title": "Discord webhook or browser push notifications for finished extractions?",
+    "body": "Is there any way to set up Discord notifications or desktop push notifications when EverForge finishes processing a queued video?\n\nWhen I queue up longer YouTube videos, it takes a minute or two to extract all the workflows and business ideas. Half the time I navigate away or forget to check back. You should really add Discord webhook integration so it can ping a channel whenever new market opportunities are parsed!",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThis is a feature request asking for new functionality (Discord webhook/push notifications on job completion), which fits the repo's 'enhancement' label for new feature or request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "44": {
+    "title": "Feature request: Bulk URL import / Multi-link queueing",
+    "body": "Right now I have to paste a YouTube or Reddit link, hit parse, wait for it, save it, and then paste the next link. I usually have 10-15 video links saved up from my daily research. Processing them one by one is super tedious and slow.\n\nCan we please get a bulk import box where we can paste multiple links (one per line) and have EverForge process them all in a background queue?",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThis is a feature request for bulk URL import/queueing functionality that doesn't currently exist in the repo.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "45": {
+    "title": "Cannot edit extracted summary text directly on the workflow card?? Fix this",
+    "body": "Why does the app not let me edit the text inside the extracted workflow cards? I'm trying to fix typos made by the AI parsing or rephrase a market opportunity to better match my project, but clicking on the text does nothing. It just selects the text like a static webpage.\n\nThis is basic functionality. We should be able to click into any parsed bullet point and edit or delete text directly before saving it to our library. Please fix this bug asap.",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThe user is requesting new functionality (inline editing of extracted card text) that doesn't currently exist, rather than reporting broken existing behavior\u2014this is a feature request despite the demanding tone.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "46": {
+    "title": "Onboarding tutorial step 4 references \"Workflow Templates\" menu which doesn't exist",
+    "body": "Hey, I'm going through the \"Getting Started with EverForge\" guide in the documentation. Step 4 says:\n\n\"Select 'Workflow Templates' from the left sidebar menu to choose how AI extracts steps from your forwarded videos.\"\n\nThere is no \"Workflow Templates\" option on the left sidebar menu anymore. I checked under Settings and preferences too. Is this feature renamed or moved? Right now new users following the setup guide will get confused/stuck.",
+    "live_label": "documentation",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **documentation**\n\nThe issue reports that the onboarding tutorial documentation references a UI element (\"Workflow Templates\" menu) that no longer exists, meaning the guide needs to be updated to reflect the current interface.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "47": {
+    "title": "How do I move a saved workflow item from one folder to another?",
+    "body": "Hi there! I recently created a new folder called \"2026 SaaS Ideas\" in my library. I have about 15 items currently sitting in my default \"Unsorted\" folder that I want to move into this new folder, but I can't figure out how to do it.\n\nI tried dragging and dropping them, but that didn't work. Is there a \"Move to Folder\" option on the card details screen that I'm missing? Thanks for the help!",
+    "live_label": "question",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **question**\n\nThe user is asking how to perform an action (moving items between folders) in the app, which is a usage question rather than a bug report or feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "48": {
+    "title": "Video timestamp parsing not matching documentation behavior",
+    "body": "The documentation under \"Advanced Parsing Features\" states:\n\n\"EverForge automatically extracts timestamped chapters from YouTube videos and attaches the specific timestamp link to each extracted workflow.\"\n\nWhen I process a 30-minute YouTube video that has clear timestamped chapters in the video description, the extracted workflows in EverForge just show generic bullet points without any timestamp links attached.\n\nI can't tell if the parser is failing to read the description timestamps, if this only works on certain video types, or if I misinterpreted what the documentation means by timestamp ",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe documented feature of automatically extracting and attaching timestamp links to workflows is not functioning as described, indicating something isn't working as intended.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "49": {
+    "title": "Quality of life: Remember last open folder in library between sessions",
+    "body": "Every time I open EverForge, the library view defaults back to showing \"All Items\". Since I organize all my active work inside a specific \"Q3 Automation Projects\" folder, I have to click into that folder every single time I reload the app.\n\nIt would be a huge time saver if EverForge remembered which folder was currently selected and restored that same folder view when re-opening the application!",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThis is a feature request to persist UI state (last selected folder) across sessions, which fits \"New feature or request\" rather than a defect.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "50": {
+    "title": "Search bar in Library view is extremely slow / lagging with 100+ items",
+    "body": "Lately, typing into the search bar in the Library tab has become almost unusable. I have around 120 saved YouTube and Reddit extractions. When I type a keyword like \"Zapier\" into the search box, the text input freezes for 3 to 4 seconds per keystroke before updating the list.\n\nThis used to be instant when I only had a few saved items. No crash or error, just massive lag while searching.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports broken/degraded functionality (search input freezing for seconds per keystroke) as data grows, which is a performance regression/bug rather than a missing feature.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "51": {
+    "title": "Card was charged for Pro upgrade but account still shows \"Free Plan\" / How to upgrade status?",
+    "body": "Hello, I upgraded my account to the Pro Plan yesterday afternoon. My bank account shows a $19 charge from EverForge, but when I log into the app, my account settings page still says \"Current Plan: Free Tier\" and I'm still hitting the daily parsing limits.\n\nCan someone look into my account status or tell me how to refresh my subscription state? Need this resolved for work today. Account email is [devin.m@growthlabs.io](mailto:devin.m@growthlabs.io).",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nUser was charged for Pro plan but the account status did not update, indicating a broken subscription/billing sync in the app.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "52": {
+    "title": "Folder icon misaligned and cutting off folder title text on Library sidebar",
+    "body": "Just noticed a small UI bug on the left navigation sidebar in the desktop web app. When a folder name is more than ~15 characters (e.g. \"E-commerce Automation Ideas\"), the folder icon overlaps with the first two letters of the name, and the end of the title gets cut off even when there's plenty of screen space available.\n\nPurely visual issue, but looks pretty messy. Running Edge on Windows 11 at 100% display scaling.\n\n",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThis describes a visual/UI rendering defect (icon overlap and text truncation) in the sidebar, which fits 'Something isn't working'.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "53": {
+    "title": "reddit API is terrible and ruined everything",
+    "body": "reddit charging for their api ruined all good tools. now everything is worse and parsing takes too long or fails because reddit greed. also youtube ads are out of control lately. why is internet getting so bad.",
+    "live_label": null,
+    "duplicate_of": null,
+    "live_rationale": null,
+    "n_bot_comments": 0,
+    "n_total_comments": 0
+  },
+  "54": {
+    "title": "Library view doesn't update automatically when video finishes parsing in background",
+    "body": "When I submit a long YouTube video for parsing, I usually go back to my Library view. When the background job completes, the new item does not automatically appear in the Library list unless I manually press F5 to reload the entire web page.\n\nIs this a bug where the UI auto-refresh/websocket isn't triggering, or is EverForge designed to require a manual page refresh to show newly completed items? If it's the latter, adding auto-refresh or a live status banner would be a great improvement.",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThe user explicitly asks for the Library view to auto-refresh or show a live status banner when background parsing completes, which is a feature request rather than a confirmed defect.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "55": {
+    "title": "reddit parse not working fix",
+    "body": "reddit link extraction broken blank page fix it asap",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports that Reddit link parsing is broken and results in a blank page, indicating something isn't working as expected.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "56": {
+    "title": "Cannot parsing youtube video link when link have time parameter ?t=",
+    "body": "Hello. When I try for put YouTube video link inside input box, if link have time parameter at the end (example: [[https://youtu.be/abc123xyz?t=140](https://youtu.be/abc123xyz?t=140)](https://events.trustifi.com/api/o/v1/click/6aba636141d606722800ae0c/fffda3/3a574c/67c70b/bf6fe9/5f1247/14c560/a5919b/c4e51c/e8666a/ef542d/85972d/627493/9a11d6/1f4096/1d247f/808d78/933282/8d98f4/eba90d/721490/96daf0/f21b02/a05147/6f8ab9/f2d143/4ddb75/368ca4/90e4f4/97129c/d47050/8e4565/95333c/7b0544/fb3a09/377a1c/6e0d7f/33361e/f88a00/83bcee/03f6e6/352093/942d5d/b0df1c/bddab8/3e04ca/907b28/950622/7f2ac5/0d100a/fd5cf9",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe report describes broken URL parsing behavior (valid YouTube links with a ?t= timestamp parameter are rejected as invalid), which is a functional defect rather than a feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "57": {
+    "title": "Reddit video posts give error during extraction + Please add TikTok video parsing!",
+    "body": "Whenever I try to forward a Reddit post that contains an embedded video (instead of text or a link), the parser fails with \"Error: Could not extract post content\".\n\nAlso, since we can parse YouTube videos and Reddit threads, can you guys please add support for TikTok URLs as well? A lot of great marketing and AI automation tips are posted on TikTok now and it would be awesome to pull workflows from them too!",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe primary and first-described issue is that Reddit video posts fail extraction with an explicit error, which matches the repo's \"bug: Something isn't working\" label; the TikTok request is a secondary enhancement mentioned in the same issue.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "58": {
+    "title": "How do I use the Date Range filter in the Library? Showing 0 results",
+    "body": "Hi, I'm trying to filter my saved library items to only show workflows extracted in the last 7 days. I go to Library -> Filter -> Date Range, select \"Start Date: Sept 17\" and \"End Date: Sept 24\", and click \"Apply Filter\".\n\nHowever, every time I do this, the library view turns completely blank and says \"0 items found\", even though I have clearly saved 12 items this past week. Am I entering the date format wrong or missing a step? How do I get date filtering to display items properly?",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user follows the documented steps for the Date Range filter but gets \"0 items found\" despite items existing in that range, indicating the filter feature isn't working as intended.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "59": {
+    "title": "App artificially throttling/slowing down parsing after 10 videos in a day?",
+    "body": "I've been processing YouTube videos all morning. The first 10 videos parsed in under 15 seconds each. But starting on video 11, every single parsing request is taking over 3 minutes or getting queued indefinitely.\n\nWhy is the app suddenly running so slow after 10 videos? Is the server overloaded or is something hanging in my session? Reloading the app didn't help.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports a functional regression\u2014processing suddenly slows dramatically after 10 videos, suggesting a rate limit, queue bug, or resource leak rather than expected behavior\u2014so \"bug\" fits the repo's convention of tagging things that aren't working as intended.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "60": {
+    "title": "Keyboard TAB navigation stuck on extracted workflow card modal (Accessibility bug)",
+    "body": "When using keyboard navigation (TAB key) to browse through extracted workflow steps in the detail modal, focus gets permanently trapped inside the \"Copy Text\" button. Pressing TAB or SHIFT+TAB does not move focus to the next button or close button.\n\nAlso, screen readers (NVDA / VoiceOver) do not announce the header tags on the market opportunity list cards. Keyboard/accessibility navigation needs some fixes here.\n\n",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe issue describes broken keyboard focus trapping and missing screen reader announcements in the modal, which is a case of something isn't working (accessibility bug) rather than a new feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "61": {
+    "title": "URGENT SECURITY CONCERN: Seeing another user's saved workflows and YouTube links in my library!!",
+    "body": "I logged into my EverForge account just now and opened my Library. Alongside my own saved items, there are around 15 parsed YouTube videos and custom folders containing market ideas about \"Drop shipping in UK\" that DO NOT BELONG TO ME.\n\nI do not drop ship and I have never parsed these videos. This looks like a severe cross-account data leak where user sessions or database queries are mixing up data between accounts. Please investigate and fix this immediately for privacy compliance!",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThis describes a critical data-isolation failure where one user's saved library items are appearing in another user's account, which is clearly a \"something isn't working\" bug report rather than a feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "62": {
+    "title": "YouTube videos with auto-generated captions fail transcript parsing",
+    "body": "If a YouTube video only has auto-generated captions (and no uploaded manual transcript file), EverForge fails during the parsing step and returns error \"Failed to fetch transcript\".\n\nTested with several recent tech talks that rely on YouTube's automated auto-captions. Videos with manually uploaded captions parse fine, but auto-captioned ones fail every time.\n\n",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nDescribes a reproducible failure (\"Failed to fetch transcript\") in existing transcript parsing functionality for a specific case, which fits the bug label.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "63": {
+    "title": "Auto-captioned YouTube links won't extract workflows",
+    "body": "hey guys, noticed that whenever a youtube video relies on automatic transcriptions instead of creator-added captions, the extraction tool fails. it gives a transcript fetch error every time. works fine if the video creator manually uploaded closed captions though.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports that transcript extraction fails specifically for auto-captioned YouTube videos, indicating broken functionality rather than a feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "64": {
+    "title": "All my saved items disappeared from Library (Filter defaulted to \"Archived\"?)",
+    "body": "Opened EverForge today and panicked because my library showed 0 saved items. I thought all my parsed workflows got deleted overnight.\n\nAfter poking around, I realized the top filter dropdown somehow got switched to \"Archived Items\" on its own, hiding all active items. When I manually set it back to \"Active\", all my data showed up again. The issue is that the app is randomly defaulting the filter setting to \"Archived\" when opening the app, making it look like data was lost.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe filter dropdown incorrectly defaults to \"Archived\" on app open, causing active items to appear missing\u2014this is unintended broken behavior, not a feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "65": {
+    "title": "Search bar \"Clear\" button doesn't reset search filter (shows 0 results)",
+    "body": "In the Library view, if you type something in the search bar and then click the little \"X\" (clear) icon inside the search field, the text disappears from the box, but the item list does NOT reset. It continues to filter by the cleared text and shows an empty/blank list as if all your saved items are missing.\n\nYou have to manually highlight the text and hit backspace or refresh the browser page to actually clear the search state and see your library again.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe search clear button fails to reset the underlying filter state, causing the library list to incorrectly show no results, which is a functional defect rather than a missing feature.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "66": {
+    "title": "YouTubeTranscriptApi throwing 404 / TranscriptsDisabled on videos lacking manual CC",
+    "body": "Looking at the developer console during failed YouTube extraction attempts:\n\nGET /api/v1/parse/youtube -> 500 Internal Server Error\n\nPayload Error: TranscriptNotFound / TranscriptsDisabled: Could not retrieve a transcript for the video [[https://www.youtube.com/watch?v=](https://www.youtube.com/watch?v=).](https://events.trustifi.com/api/o/v1/click/6aba636141d606722800ae0d/fffda3/3a574c/67c70b/bf6fe9/5f1247/14c560/a5919b/c4e51c/e8666a/ef542d/85972d/627493/9a11d6/1f4096/1d247f/808d78/933282/8d98f4/eba90d/721490/96daf0/f21b02/a05147/6f8ab9/f2d143/4ddb75/368ca4/90e4f4/97129c/d47050/8e4565/95333c/",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe YouTube parser crashes with an unhandled TranscriptsDisabled/TranscriptNotFound error and 500 response when a video lacks manual captions, indicating broken functionality rather than a feature request.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "67": {
+    "title": "Custom tags still vanishing from saved library cards (I think someone else reported this too)",
+    "body": "I think I saw another issue open about this recently, but wanted to add that custom tags are still wiping themselves for me. I tagged 5 YouTube workflow cards yesterday with \"SaaS\" and \"Marketing\", but today the tags are completely blank again.\n\nIt seems like tag updates aren't being saved to the database permanently.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports that custom tags they added are not persisting in the database, which indicates something isn't working as intended.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "68": {
+    "title": "Bug: App doesn't re-parse YouTube video when new comments or description updates are added",
+    "body": "I forwarded a YouTube video to EverForge last week and saved the extracted workflow. Yesterday the video creator updated the video description with new resource links and added a pinned comment with extra workflow steps.\n\nI opened the saved card in EverForge expecting it to reflect the new comments and description updates, but it's still showing the old data from last week. The app doesn't automatically re-sync or update saved items when the source video changes. Please fix this syncing bug.",
+    "live_label": "bug",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **bug**\n\nThe user reports that saved YouTube video data doesn't sync or refresh when the source content changes, which is a malfunctioning behavior matching the 'bug' label.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  },
+  "69": {
+    "title": "Is there a way to forward YouTube/Reddit links via a Chrome extension or right-click menu?",
+    "body": "Is there currently any browser extension or right-click menu option available for EverForge?\n\nRight now whenever I come across a good YouTube video or Reddit thread, I have to copy the link, open my EverForge tab, paste it into the input box, and hit process. Being able to right-click a link and select \"Send to EverForge\" from a context menu would be so much faster. Not sure if this exists and I missed it or if it's something on the roadmap!",
+    "live_label": "enhancement",
+    "duplicate_of": null,
+    "live_rationale": "Suggested label: **enhancement**\n\nThe user is requesting a new feature (a browser extension/right-click context menu integration) rather than reporting a bug, which fits the repo's \"enhancement\" label for new feature requests.",
+    "n_bot_comments": 1,
+    "n_total_comments": 1
+  }
+}

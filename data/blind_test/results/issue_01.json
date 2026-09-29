@@ -1,0 +1,26 @@
+{
+  "run": {
+    "run_id": "8e43d547be4847ffacd8488889e55d18",
+    "idempotency_key": "advise-ec292fc7d1fd",
+    "event_type": "issue.opened",
+    "target": "ForgeAS/everForge",
+    "status": "succeeded",
+    "started_at": "2026-09-23T17:57:25.611+00:00",
+    "finished_at": "2026-09-23T17:57:27.887+00:00",
+    "latency_ms": 2271.6260830056854,
+    "request": {
+      "body": "opened everforge put youtube link in the input box and clicked process. screen went completely white. tried restarting app same thing happened again. literally unusable right now please fix asap i need to save this workflow video",
+      "number": 1,
+      "title": "app crashes when parsing yt video link"
+    },
+    "response": {
+      "rationale": "The user reports that the app crashes (white screen) reproducibly when processing a YouTube link, which matches \"Something isn't working\".",
+      "suggested_label": "bug"
+    },
+    "outbound_action": "none",
+    "error_type": null,
+    "error_message": null,
+    "schema_version": 1
+  },
+  "duplicate": false
+}

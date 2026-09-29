@@ -1,0 +1,31 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+.env.*
+*.pem
+*.private-key.pem
+
+# Local ledger data (runtime records, never commit)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# macOS
+.DS_Store
+.pytest_cache/
+
+# FUSE mount artifacts (not real files, never commit)
+.fuse_hidden*
+
+# Pulled metrics snapshot -- generated/stale, not source
+/ledger.ndjson

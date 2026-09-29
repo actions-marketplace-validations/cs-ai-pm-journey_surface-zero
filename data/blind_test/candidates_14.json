@@ -1,0 +1,67 @@
+[
+  {
+    "number": 1,
+    "title": "app crashes when parsing yt video link",
+    "body": "opened everforge put youtube link in the input box and clicked process. screen went completely white. tried restarting app same thing happened again. literally unusable right now please fix asap i need to save this workflow video"
+  },
+  {
+    "number": 2,
+    "title": "\"Extract Workflows\" button not responding",
+    "body": "Hi team,\n\nI pasted a reddit thread url into EverForge and hit parse. The summary loaded fine, but when I click the \"Extract Workflows\" button at the bottom right, nothing happens at all. There's no loading spinner or error popup.\n\nI tried refreshing the browser tab, clearing my cache, and trying a different Reddit post, but clicking that button still does nothing. Am I doing something wrong or is the button disabled? Thanks!"
+  },
+  {
+    "number": 3,
+    "title": "Saved Reddit automation tidbits from yesterday completely vanished / library reset?",
+    "body": "Hey guys, yesterday around 4:30 PM EST I forwarded about 8 Reddit posts from r/automation and r/SaaS into EverForge. It extracted a bunch of awesome AI workflow tidbits and 3 potential market openings for a niche CRM tool. I carefully organized them, edited a few titles, and saved them into my \"Q3 SaaS Ideas\" folder in the library.\n\nThis morning I logged back in around 9 AM to review them for a meeting with my cofounder and the entire Q3 folder is empty?? Actually it shows 2 items now but they are old items from last week and the titles are changed back to \"Untitled YouTube Parsing #14\".\n\nI didn't log out or change accounts. Where did my parsed data go? Is there a backup or version history? I spent almost 3 hours sorting those workflows yesterday. Please tell me they aren't gone forever."
+  },
+  {
+    "number": 4,
+    "title": "Is saved library items disappearing a known issue?",
+    "body": "hey is anyone else losing saved items in the library? i processed a few youtube links 2 days ago and tagged all the market opportunities. came back today to check my library and half the items i parsed are gone and some of the saved tags reverted back to default.\n\nnot sure if my local database got wiped or if syncing is broken. is this a known bug or is there something wrong on my end? running on chrome win 11."
+  },
+  {
+    "number": 5,
+    "title": "Feature request: Export parsed ideas and workflows to CSV / Excel",
+    "body": "Currently I have to manually highlight and copy-paste every AI workflow and business idea into Google Sheets so I can share them with my team and prioritize them. With dozens of videos forwarded every week this is taking way too long.\n\nCan we get an \"Export to CSV\" or \".xlsx\" button in the library view? Ideally it would export columns for Source URL, Extracted Workflows, Market Openings, and Date Added. Thanks!"
+  },
+  {
+    "number": 6,
+    "title": "Dark mode please!!",
+    "body": "The bright white background is blinding when I'm processing YouTube videos late at night. My eyes are burning lol.\n\nPlease add a dark theme toggle in settings or make it respect system dark mode settings. Would make reviewing parsed Reddit posts at night way better."
+  },
+  {
+    "number": 7,
+    "title": "Auto notifications when new market openings are extracted / email alerts?",
+    "body": "is there any way to get an email or discord notification whenever everforge finishes parsing a video or finds high-confidence business openings?\n\nright now I send a bunch of youtube links from my phone during the day and then i have to keep manually refreshing the app to see if the extraction finished and what ideas came out. you guys should really add automatic alerts/webhooks for this, it would save so much time checking back repeatedly."
+  },
+  {
+    "number": 8,
+    "title": "Bug: App won't automatically execute the extracted AI workflows in my Zapier account",
+    "body": "I forwarded a YouTube video about an automated lead gen workflow. EverForge parsed the steps fine in the preview screen, but when I click on the step \"Deploy to Zapier\", it just highlights the text instead of connecting to my Zapier account and building the zap.\n\nTried re-connecting my account in settings but there is no integration option for Zapier. Why doesn't the app let me execute/run the workflows directly? It only extracts text steps. Please fix this bug so it auto-creates the zaps."
+  },
+  {
+    "number": 9,
+    "title": "Getting Started guide step 3 references missing \"API Keys\" tab in Settings",
+    "body": "I'm following the setup guide in the README / onboarding documentation. Step 3 says:\n\n\"Go to Settings -> API Keys and paste your YouTube Data API key to enable video transcription parsing.\"\n\nHowever, in version 2.4, there is no \"API Keys\" tab under Settings. There's only \"Account\", \"Integrations\", and \"Appearance\". I looked under Integrations and YouTube isn't listed there either.\n\nI'm completely stuck on setup because I can't find where to input my key. Looks like the docs are outdated compared to the current UI?"
+  },
+  {
+    "number": 10,
+    "title": "How do I filter saved ideas by source (Reddit vs YouTube)?",
+    "body": "Hi everyone! Quick question - I've been using EverForge for a couple weeks now and I have about 50 items in my library. I remember reading somewhere that you can filter your saved library to only show ideas that came from Reddit posts versus YouTube videos, but I can't seem to find where that filter option is located.\n\nIs it on the main library screen or inside settings? Sorry if this is obvious, still getting used to the layout!"
+  },
+  {
+    "number": 11,
+    "title": "Reddit thread comment depth parsing not working as documented?",
+    "body": "The docs state that when forwarding a Reddit URL, EverForge will \"parse up to top 3 comment levels for business ideas and pain points\".\n\nHowever, when I forward long Reddit threads (like reddit.com/r/Entrepreneur/comments/1a2b3c4/thread_title), it seems to only grab the main post and top-level comments. None of the nested replies with actual automation details are showing up in my extracted library items.\n\nI don't know if the parser is broken for nested comments, if there's a setting I missed to enable deep comment parsing, or if the docs mean something else by \"3 comment levels\". Here is a screenshot of my parsed view (attached below) compared to the actual thread."
+  },
+  {
+    "number": 12,
+    "title": "QoL: Remember last selected library sorting option across sessions",
+    "body": "Small tweak request: Every time I open EverForge or reload the page, the library sort defaults to \"Date Added (Oldest First)\". I always have to manually switch it to \"Most Recent\" or \"Sort by Market Opportunity Score\".\n\nCould the app remember your last used sort preference in local storage so we don't have to re-select it every time we open the app? Thanks for the awesome tool!"
+  },
+  {
+    "number": 13,
+    "title": "Blank screen crash when sharing long YouTube playlist link",
+    "body": "Just wanted to post my experience in case it helps. I was trying to forward a 45-minute YouTube video from my mobile browser using the EverForge web app input. As soon as I hit the parse button, the main layout disappears and the page goes totally blank white.\n\nChecked browser console and seeing Uncaught TypeError: Cannot read properties of undefined (reading 'extract'). Happens every time on both Safari mobile and Chrome desktop when starting a new video parse from the home dashboard."
+  }
+]

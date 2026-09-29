@@ -1,0 +1,17 @@
+[
+  {
+    "number": 1,
+    "title": "app crashes when parsing yt video link",
+    "body": "opened everforge put youtube link in the input box and clicked process. screen went completely white. tried restarting app same thing happened again. literally unusable right now please fix asap i need to save this workflow video"
+  },
+  {
+    "number": 2,
+    "title": "\"Extract Workflows\" button not responding",
+    "body": "Hi team,\n\nI pasted a reddit thread url into EverForge and hit parse. The summary loaded fine, but when I click the \"Extract Workflows\" button at the bottom right, nothing happens at all. There's no loading spinner or error popup.\n\nI tried refreshing the browser tab, clearing my cache, and trying a different Reddit post, but clicking that button still does nothing. Am I doing something wrong or is the button disabled? Thanks!"
+  },
+  {
+    "number": 3,
+    "title": "Saved Reddit automation tidbits from yesterday completely vanished / library reset?",
+    "body": "Hey guys, yesterday around 4:30 PM EST I forwarded about 8 Reddit posts from r/automation and r/SaaS into EverForge. It extracted a bunch of awesome AI workflow tidbits and 3 potential market openings for a niche CRM tool. I carefully organized them, edited a few titles, and saved them into my \"Q3 SaaS Ideas\" folder in the library.\n\nThis morning I logged back in around 9 AM to review them for a meeting with my cofounder and the entire Q3 folder is empty?? Actually it shows 2 items now but they are old items from last week and the titles are changed back to \"Untitled YouTube Parsing #14\".\n\nI didn't log out or change accounts. Where did my parsed data go? Is there a backup or version history? I spent almost 3 hours sorting those workflows yesterday. Please tell me they aren't gone forever."
+  }
+]

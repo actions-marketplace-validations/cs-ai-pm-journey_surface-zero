@@ -1,0 +1,12 @@
+[
+  {
+    "number": 1,
+    "title": "app crashes when parsing yt video link",
+    "body": "opened everforge put youtube link in the input box and clicked process. screen went completely white. tried restarting app same thing happened again. literally unusable right now please fix asap i need to save this workflow video"
+  },
+  {
+    "number": 2,
+    "title": "\"Extract Workflows\" button not responding",
+    "body": "Hi team,\n\nI pasted a reddit thread url into EverForge and hit parse. The summary loaded fine, but when I click the \"Extract Workflows\" button at the bottom right, nothing happens at all. There's no loading spinner or error popup.\n\nI tried refreshing the browser tab, clearing my cache, and trying a different Reddit post, but clicking that button still does nothing. Am I doing something wrong or is the button disabled? Thanks!"
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "run": {
+    "run_id": "82e1cf0c0ed94c1a80a85dfab964404a",
+    "idempotency_key": "advise-cb27cfa3d22c",
+    "event_type": "issue.opened",
+    "target": "ForgeAS/everForge",
+    "status": "succeeded",
+    "started_at": "2026-09-23T17:57:28.554+00:00",
+    "finished_at": "2026-09-23T17:57:30.468+00:00",
+    "latency_ms": 1911.880832980387,
+    "request": {
+      "body": "Hi team,\n\nI pasted a reddit thread url into EverForge and hit parse. The summary loaded fine, but when I click the \"Extract Workflows\" button at the bottom right, nothing happens at all. There's no loading spinner or error popup.\n\nI tried refreshing the browser tab, clearing my cache, and trying a different Reddit post, but clicking that button still does nothing. Am I doing something wrong or is the button disabled? Thanks!",
+      "candidates": [
+        {
+          "body": "opened everforge put youtube link in the input box and clicked process. screen went completely white. tried restarting app same thing happened again. literally unusable right now please fix asap i need to save this workflow video",
+          "number": 1,
+          "title": "app crashes when parsing yt video link"
+        }
+      ],
+      "number": 2,
+      "title": "\"Extract Workflows\" button not responding"
+    },
+    "response": {
+      "rationale": "The \"Extract Workflows\" button fails to respond with no error or feedback, indicating broken functionality rather than a documentation or feature request issue.",
+      "suggested_label": "bug"
+    },
+    "outbound_action": "none",
+    "error_type": null,
+    "error_message": null,
+    "schema_version": 1
+  },
+  "duplicate": false
+}

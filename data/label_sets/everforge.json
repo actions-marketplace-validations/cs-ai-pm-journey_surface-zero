@@ -1,0 +1,15 @@
+{
+  "repo": "ForgeAS/everForge",
+  "note": "Real target confirmed 2026-09-23, pulled from the repo's Labels tab (GitHub's stock defaults, unmodified). Used for the blind label-classification test against EverForge while PCNtoolkit outreach is unresolved.",
+  "labels": [
+    {"name": "bug", "description": "Something isn't working"},
+    {"name": "documentation", "description": "Improvements or additions to documentation"},
+    {"name": "duplicate", "description": "This issue or pull request already exists"},
+    {"name": "enhancement", "description": "New feature or request"},
+    {"name": "good first issue", "description": "Good for newcomers"},
+    {"name": "help wanted", "description": "Extra attention is needed"},
+    {"name": "invalid", "description": "This doesn't seem right"},
+    {"name": "question", "description": "Further information is requested"},
+    {"name": "wontfix", "description": "This will not be worked on"}
+  ]
+}

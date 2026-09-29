@@ -1,0 +1,33 @@
+# App name is globally unique across all Fly accounts, adjust if this one is taken when you
+# run `fly apps create`, it doesn't have to match what's here, just keep them in sync.
+app = "adamsaulters-surface-zero"
+primary_region = "iad"  # Ashburn, VA, closest common Fly region to Raleigh/Durham. Change freely.
+
+[build]
+
+[http_service]
+internal_port = 8000
+force_https = true
+# The whole reason we're on Fly instead of Render's free tier: this stays on, deliberately,
+# rather than defaulting to Fly's own idle-scale-down behavior. Do not remove these two lines
+# without re-reading the reasoning in main.py's module docstring and the vault's retrospective
+# on the Render keep-alive plan.
+auto_stop_machines = "off"
+auto_start_machines = false
+min_machines_running = 1
+
+[[mounts]]
+source = "surface_zero_data"
+destination = "/data"
+
+[env]
+# Runtime state lives on the mounted volume, so it survives a redeploy. The label set stays
+# baked into the image, it's static config, not state, see .dockerignore.
+SURFACE_ZERO_DB = "/data/ledger.db"
+SURFACE_ZERO_KILL_SWITCH_FILE = "/data/kill_switch.json"
+SURFACE_ZERO_LABELS = "data/label_sets/everforge.json"
+
+[[vm]]
+memory = "256mb"
+cpu_kind = "shared"
+cpus = 1
