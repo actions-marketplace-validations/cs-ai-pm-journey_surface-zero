@@ -6,8 +6,21 @@ label set, plus a duplicate flag. Nothing else.
 
 ## Status
 
-Week 2, Monday: ledger-first skeleton. A request creates a durable ledger record before
-the agent does anything, and every run ends in exactly one terminal state.
+Live and operating (Gate A, Level 2 -- recommends only, never applies its own suggestion).
+Deployed on Fly.io since 2026-09-24, authenticating as the `surface-zero-advisor` GitHub
+App, processing real webhook deliveries against `ForgeAS/everForge`. Duplicate detection
+(candidate fetching, closed-issue regression flagging) shipped 2026-09-29. Full metric
+definitions, evidence classes and current operating numbers live in the project vault's
+`metrics-definitions.md`; a public operating page is in progress (B11W3).
+
+**Repository history note:** this repo's git history starts 2026-09-29 with a single
+initial commit, not at the project's actual start. The code was never under version
+control before that date -- everything from the Week 1-2 build (the ledger-first
+skeleton, the PAT-to-GitHub-App identity migration, batch-1 blind testing) happened
+without commit-by-commit history. That work is documented in the project vault
+(`learning-log.md`, `methodology-doc.md`, `retrospective.md`), not in `git blame` here.
+Treat this repo's history as reliable from 2026-09-29 forward, and the vault as the
+source of truth for anything earlier.
 
 ## Setup
 
