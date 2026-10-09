@@ -26,6 +26,8 @@ destination = "/data"
 SURFACE_ZERO_DB = "/data/ledger.db"
 SURFACE_ZERO_KILL_SWITCH_FILE = "/data/kill_switch.json"
 SURFACE_ZERO_LABELS = "data/label_sets/everforge.json"
+# Repo gating. Only these repos are ever processed; anything else is recorded IGNORED.
+SURFACE_ZERO_ALLOWED_REPOS = "ForgeAS/everForge"
 
 [[vm]]
 memory = "256mb"

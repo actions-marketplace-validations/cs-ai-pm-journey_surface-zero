@@ -77,6 +77,11 @@ class OutboundAction(StrEnum):
     NONE = "none"
     COMMENT_POSTED = "comment_posted"
     COMMENT_SUPPRESSED = "comment_suppressed"
+    # The agent ran and its recommendation is in the ledger, but the repo is in
+    # shadow mode so no comment was ever attempted. Distinct from
+    # COMMENT_SUPPRESSED (kill switch) on purpose: shadow is a planned state,
+    # a kill switch activation is an intervention. Never count as "posted".
+    SHADOW_RECORDED = "shadow_recorded"
 
 
 class RunRecord(BaseModel):

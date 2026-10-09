@@ -32,6 +32,7 @@ shape than the orphan handling built for the synchronous path.
 
 from __future__ import annotations
 
+import dataclasses
 import hmac
 
 from fastapi import FastAPI, Request, Response
@@ -64,13 +65,24 @@ def create_app(
     poster: CommentPoster,
     metrics_token: str | None = None,
     candidate_fetcher: CandidateFetcher | None = None,
+    allowed_repos: frozenset[str] | None = None,
+    shadow_repos: frozenset[str] = frozenset(),
 ) -> FastAPI:
     """Builds the app from already-constructed dependencies, real or fake.
     Tests pass fakes here directly, nothing about this function knows or
     cares whether `agent` calls a real model or `poster` calls a real API.
+
+    allowed_repos: None keeps the original behavior (no repo gating). A set
+    means only those repos (case-insensitive) are ever processed; a signed
+    event from any other repo is recorded as IGNORED with the reason stated,
+    never run. Required in production once the GitHub App is public, because
+    then anyone can install it and send signed events.
+
+    shadow_repos: repos where the agent runs but no comment is attempted.
     """
     app = FastAPI(title="surface-zero")
-    outbound = build_outbound_handler(poster, kill_switch)
+    outbound = build_outbound_handler(poster, kill_switch, shadow_repos)
+    allowed = None if allowed_repos is None else frozenset(r.lower() for r in allowed_repos)
 
     @app.post("/webhook")
     async def webhook(request: Request) -> Response:
@@ -89,6 +101,13 @@ def create_app(
             )
         except MalformedEventError as exc:
             return Response(status_code=400, content=str(exc))
+
+        if allowed is not None and event.repo is not None and event.repo.lower() not in allowed:
+            event = dataclasses.replace(
+                event,
+                should_process=False,
+                ignore_reason=f"repo {event.repo!r} is not on the allowlist",
+            )
 
         if not event.should_process:
             record_ignored_event(ledger, event)
@@ -135,6 +154,16 @@ def create_app(
     return app
 
 
+def parse_repo_list(raw: str | None) -> frozenset[str] | None:
+    """Comma-separated owner/name list from an env var. None when unset or
+    blank, which callers treat as "no gating", so an empty allowlist can never
+    silently mean "allow everything" by being set to an empty string.
+    """
+    if raw is None or not raw.strip():
+        return None
+    return frozenset(part.strip() for part in raw.split(",") if part.strip())
+
+
 def build_production_app() -> FastAPI:
     """Wires real dependencies from the environment. Deferred imports and
     deferred env reads on purpose, so importing this module (as the test
@@ -178,6 +207,8 @@ def build_production_app() -> FastAPI:
         poster=GitHubCommentPoster.from_env(),
         metrics_token=metrics_token,
         candidate_fetcher=GitHubCandidateFetcher.from_env(),
+        allowed_repos=parse_repo_list(os.environ.get("SURFACE_ZERO_ALLOWED_REPOS")),
+        shadow_repos=parse_repo_list(os.environ.get("SURFACE_ZERO_SHADOW_REPOS")) or frozenset(),
     )
 
 

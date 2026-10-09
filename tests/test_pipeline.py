@@ -170,3 +170,32 @@ def test_render_comment_closed_duplicate_with_unknown_reason_degrades_gracefully
     )
     assert "closed** #5" in body
     assert "closed as None" not in body
+
+
+def test_shadow_repo_runs_the_agent_but_never_calls_the_poster(ledger, kill_switch):
+    poster = FakePoster()
+    handler = build_outbound_handler(poster, kill_switch, shadow_repos=frozenset({"Fixture/Example-Repo"}))
+    run_request(request(), label_agent, ledger, outbound=handler)
+
+    assert poster.calls == []
+    (run,) = ledger.list_runs()
+    assert run.status == RunStatus.SUCCEEDED
+    assert run.outbound_action == OutboundAction.SHADOW_RECORDED
+
+
+def test_shadow_is_reported_as_shadow_not_as_a_kill_switch_suppression(ledger, kill_switch):
+    kill_switch.engage("test")
+    poster = FakePoster()
+    handler = build_outbound_handler(poster, kill_switch, shadow_repos=frozenset({"fixture/example-repo"}))
+    run_request(request(), label_agent, ledger, outbound=handler)
+
+    (run,) = ledger.list_runs()
+    assert run.outbound_action == OutboundAction.SHADOW_RECORDED
+
+
+def test_non_shadow_repo_still_posts_when_another_repo_is_shadowed(ledger, kill_switch):
+    poster = FakePoster()
+    handler = build_outbound_handler(poster, kill_switch, shadow_repos=frozenset({"someone/else"}))
+    run_request(request(), label_agent, ledger, outbound=handler)
+
+    assert len(poster.calls) == 1

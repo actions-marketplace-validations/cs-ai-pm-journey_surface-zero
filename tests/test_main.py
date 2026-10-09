@@ -221,3 +221,56 @@ def test_no_candidate_fetcher_configured_behaves_exactly_as_before(app_parts):
     resp = post_event(client, event="issues", delivery="cand-3", payload=issues_opened_payload())
     assert resp.status_code == 200
     assert len(poster.calls) == 1
+
+
+def _client(tmp_path, **kw):
+    ledger = Ledger(tmp_path / "l2.db")
+    poster = FakePoster()
+    app = create_app(
+        webhook_secret=SECRET,
+        ledger=ledger,
+        kill_switch=KillSwitch(tmp_path / "kill2.json"),
+        agent=label_agent,
+        poster=poster,
+        **kw,
+    )
+    return TestClient(app), ledger, poster
+
+
+def test_repo_not_on_allowlist_is_ignored_with_a_stated_reason(tmp_path):
+    client, ledger, poster = _client(tmp_path, allowed_repos=frozenset({"some/other-repo"}))
+    resp = post_event(client, event="issues", delivery="al1", payload=issues_opened_payload())
+    assert resp.status_code == 200
+    assert poster.calls == []
+    (run,) = ledger.list_runs()
+    assert run.status == RunStatus.IGNORED
+    assert "allowlist" in run.response["ignore_reason"]
+
+
+def test_repo_on_allowlist_is_processed_case_insensitively(tmp_path):
+    client, ledger, poster = _client(tmp_path, allowed_repos=frozenset({"FIXTURE/Example-Repo"}))
+    post_event(client, event="issues", delivery="al2", payload=issues_opened_payload())
+    assert len(poster.calls) == 1
+
+
+def test_no_allowlist_keeps_the_original_behavior(tmp_path):
+    client, ledger, poster = _client(tmp_path)
+    post_event(client, event="issues", delivery="al3", payload=issues_opened_payload())
+    assert len(poster.calls) == 1
+
+
+def test_shadow_repo_records_a_run_and_posts_nothing_end_to_end(tmp_path):
+    client, ledger, poster = _client(tmp_path, shadow_repos=frozenset({"fixture/example-repo"}))
+    post_event(client, event="issues", delivery="sh1", payload=issues_opened_payload())
+    assert poster.calls == []
+    (run,) = ledger.list_runs()
+    assert run.status == RunStatus.SUCCEEDED
+    assert run.outbound_action == OutboundAction.SHADOW_RECORDED
+
+
+def test_parse_repo_list_blank_means_no_gating_not_allow_nothing():
+    from surface_zero.main import parse_repo_list
+
+    assert parse_repo_list(None) is None
+    assert parse_repo_list("  ") is None
+    assert parse_repo_list("a/b, c/d ,") == frozenset({"a/b", "c/d"})

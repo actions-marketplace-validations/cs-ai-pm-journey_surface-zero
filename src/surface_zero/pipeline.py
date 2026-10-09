@@ -56,8 +56,23 @@ def render_comment(
     )
 
 
-def build_outbound_handler(poster: CommentPoster, kill_switch: KillSwitch):
+def build_outbound_handler(
+    poster: CommentPoster,
+    kill_switch: KillSwitch,
+    shadow_repos: frozenset[str] = frozenset(),
+):
+    """shadow_repos: repos (case-insensitive) where the agent runs and the
+    ledger records its recommendation but the poster is never called. Checked
+    before the kill switch because shadow is the more specific state: the
+    comment was never going to be posted, so reporting it as a kill-switch
+    suppression would misattribute the cause.
+    """
+    shadow = frozenset(r.lower() for r in shadow_repos)
+
     def handler(request: RunRequest, result: AgentResult) -> OutboundResult:
+        if request.target and request.target.lower() in shadow:
+            return OutboundResult(action=OutboundAction.SHADOW_RECORDED)
+
         status = kill_switch.status()
         if status.active:
             return OutboundResult(
