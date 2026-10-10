@@ -81,9 +81,12 @@ def run(args):
     mapping_path = Path(args.data) / f"mapping-{args.repo.replace('/', '__')}.json"
     mapping = json.loads(mapping_path.read_text()) if mapping_path.exists() else {}
     delay = 3 if args.cmd == "seed" else args.delay
+    created_count = 0
     for n in which:
         if str(n) in mapping:
             continue
+        if args.limit is not None and created_count >= args.limit:
+            break
         title, body = build_copy(byn[n], title=titles_for(byn[n], renames))
         created = call("POST", f"/repos/{args.repo}/issues", {"title": title, "body": body})
         mapping[str(n)] = created["number"]
@@ -93,6 +96,7 @@ def run(args):
             call("PATCH", f"/repos/{args.repo}/issues/{created['number']}",
                  {"state": "closed", "state_reason": orig["state_reason"] or "completed"})
         print(f"original #{n} -> {args.repo}#{created['number']}")
+        created_count += 1
         time.sleep(delay)
 
 
@@ -101,6 +105,7 @@ if __name__ == "__main__":
     ap.add_argument("cmd", choices=["plan", "seed", "replay"])
     ap.add_argument("data")
     ap.add_argument("--repo")
+    ap.add_argument("--limit", type=int, default=None, help="create at most this many new issues, then stop (canary run)")
     ap.add_argument("--delay", type=int, default=25, help="seconds between replayed issues so each answer finishes first")
     a = ap.parse_args()
     if a.cmd != "plan" and not a.repo:
