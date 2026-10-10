@@ -181,3 +181,22 @@ def test_duplicate_ignored_delivery_does_not_write_twice(tmp_path):
     assert second_created is False
     assert first.run_id == second.run_id
     assert len(ledger.list_runs()) == 1
+
+
+def test_author_association_is_recorded_in_the_run_payload_not_used_to_skip():
+    from surface_zero.webhook import parse_event, to_run_request
+    from tests.fixtures.github_payloads import as_bytes, issues_opened_payload
+
+    payload = issues_opened_payload()
+    payload["issue"]["author_association"] = "OWNER"
+    event = parse_event(event_header="issues", delivery_id="aa1", payload_bytes=as_bytes(payload))
+    assert event.should_process is True
+    assert to_run_request(event).payload["author_association"] == "OWNER"
+
+
+def test_missing_author_association_is_none_not_an_error():
+    from surface_zero.webhook import parse_event, to_run_request
+    from tests.fixtures.github_payloads import as_bytes, issues_opened_payload
+
+    event = parse_event(event_header="issues", delivery_id="aa2", payload_bytes=as_bytes(issues_opened_payload()))
+    assert to_run_request(event).payload["author_association"] is None

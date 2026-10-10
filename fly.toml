@@ -25,9 +25,9 @@ destination = "/data"
 # baked into the image, it's static config, not state, see .dockerignore.
 SURFACE_ZERO_DB = "/data/ledger.db"
 SURFACE_ZERO_KILL_SWITCH_FILE = "/data/kill_switch.json"
-SURFACE_ZERO_LABELS = "data/label_sets/everforge.json"
-# Repo gating. Only these repos are ever processed; anything else is recorded IGNORED.
-SURFACE_ZERO_ALLOWED_REPOS = "ForgeAS/everForge"
+SURFACE_ZERO_LABELS = "data/label_sets/everforge.json,data/label_sets/medtimer-replay.json"
+# Repo gating. Only these repos are ever processed; events from any other repo get a 200 and no ledger row.
+SURFACE_ZERO_ALLOWED_REPOS = "ForgeAS/everForge,ForgeAS/medTimer-replay"
 
 [[vm]]
 memory = "256mb"

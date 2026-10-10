@@ -71,6 +71,12 @@ class ParsedEvent:
     issue_title: str | None
     issue_body: str | None
     issue_number: int | None
+    # GitHub's author_association for the issue's author (OWNER, MEMBER,
+    # COLLABORATOR, CONTRIBUTOR, NONE, ...). Recorded, never used to skip a
+    # run: on a repo where the maintainer files most issues, skipping them
+    # would leave no evidence. It exists so metrics can report
+    # maintainer-authored and outside-reporter issues as separate classes.
+    author_association: str | None = None
 
 
 class MalformedEventError(Exception):
@@ -148,6 +154,7 @@ def parse_event(
         issue_title=issue.get("title"),
         issue_body=issue.get("body"),
         issue_number=issue.get("number"),
+        author_association=issue.get("author_association"),
     )
 
 
@@ -168,6 +175,7 @@ def to_run_request(event: ParsedEvent) -> RunRequest:
             "title": event.issue_title or "",
             "body": event.issue_body or "",
             "number": event.issue_number,
+            "author_association": event.author_association,
         },
     )
 

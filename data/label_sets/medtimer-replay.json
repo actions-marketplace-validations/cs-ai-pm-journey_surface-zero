@@ -1,0 +1,8 @@
+{
+  "repo": "ForgeAS/medTimer-replay",
+  "note": "Replay fork of Futsch1/medTimer, created 2026-10-10 per the maintainer's own counter-offer. Descriptions are GitHub's stock label descriptions as they appear on the original repo, not written by Surface Zero's author. Only bug and enhancement are offered: they are the only two the maintainer actually uses on issues (255 enhancement, 185 bug, 5 good first issue, 1 dependencies across 518 issues). question and documentation exist on the repo with zero uses and are excluded on purpose.",
+  "labels": [
+    {"name": "bug", "description": "Something isn't working"},
+    {"name": "enhancement", "description": "New feature or request"}
+  ]
+}

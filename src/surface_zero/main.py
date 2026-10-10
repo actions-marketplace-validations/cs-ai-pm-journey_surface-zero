@@ -32,7 +32,6 @@ shape than the orphan handling built for the synchronous path.
 
 from __future__ import annotations
 
-import dataclasses
 import hmac
 
 from fastapi import FastAPI, Request, Response
@@ -67,6 +66,7 @@ def create_app(
     candidate_fetcher: CandidateFetcher | None = None,
     allowed_repos: frozenset[str] | None = None,
     shadow_repos: frozenset[str] = frozenset(),
+    agents_by_repo: dict[str, Agent] | None = None,
 ) -> FastAPI:
     """Builds the app from already-constructed dependencies, real or fake.
     Tests pass fakes here directly, nothing about this function knows or
@@ -74,11 +74,16 @@ def create_app(
 
     allowed_repos: None keeps the original behavior (no repo gating). A set
     means only those repos (case-insensitive) are ever processed; a signed
-    event from any other repo is recorded as IGNORED with the reason stated,
-    never run. Required in production once the GitHub App is public, because
-    then anyone can install it and send signed events.
+    event from any other repo is rejected before any ledger write, never run.
+    Required in production once the GitHub App is public, because then anyone can install it and send signed events.
 
     shadow_repos: repos where the agent runs but no comment is attempted.
+
+    agents_by_repo: when given, each repo is advised by its own agent (its own
+    label vocabulary); keys are lowercase owner/name. A repo with no entry is
+    rejected with no ledger row rather than falling back to some other repo's
+    labels, which would recommend labels that do not exist there. When None,
+    the single `agent` handles every repo (original behavior).
     """
     app = FastAPI(title="surface-zero")
     outbound = build_outbound_handler(poster, kill_switch, shadow_repos)
@@ -102,12 +107,15 @@ def create_app(
         except MalformedEventError as exc:
             return Response(status_code=400, content=str(exc))
 
-        if allowed is not None and event.repo is not None and event.repo.lower() not in allowed:
-            event = dataclasses.replace(
-                event,
-                should_process=False,
-                ignore_reason=f"repo {event.repo!r} is not on the allowlist",
-            )
+        if allowed is not None and (event.repo is None or event.repo.lower() not in allowed):
+            # Deliberately NO ledger row. The ledger describes this system's own
+            # operation; once the App is public, a stranger's installation can
+            # send validly signed events and would otherwise inflate the
+            # ignored count in the public metrics. 200 so GitHub doesn't mark
+            # the delivery as failing. Events with no repository at all
+            # (installation, ping) are dropped the same way: with an allowlist
+            # set, nothing unattributable to an allowed repo reaches the ledger.
+            return Response(status_code=200, content="repo not on allowlist")
 
         if not event.should_process:
             record_ignored_event(ledger, event)
@@ -132,7 +140,13 @@ def create_app(
             except Exception:
                 pass
 
-        run_request(request, agent, ledger, outbound=outbound)
+        chosen_agent = agent
+        if agents_by_repo is not None:
+            chosen_agent = agents_by_repo.get((event.repo or "").lower())
+            if chosen_agent is None:
+                return Response(status_code=200, content="no agent configured for repo")
+
+        run_request(request, chosen_agent, ledger, outbound=outbound)
         return Response(status_code=200, content="processed")
 
     @app.get("/metrics/ledger.ndjson")
@@ -198,16 +212,51 @@ def build_production_app() -> FastAPI:
     # portfolio repo's LEDGER_TOKEN Actions secret, matching values).
     metrics_token = os.environ.get("SURFACE_ZERO_METRICS_TOKEN")
 
-    label_set = LabelSet.from_file(labels_path)
+    # SURFACE_ZERO_LABELS may be a comma-separated list of label-set files, one
+    # per repo (each file's own "repo" field says which repo it belongs to).
+    label_sets = [LabelSet.from_file(p.strip()) for p in labels_path.split(",") if p.strip()]
+    label_set = label_sets[0]
+    agents_by_repo = {ls.repo.lower(): Advisor.from_env(ls) for ls in label_sets}
+
+    # Multi-target: when SURFACE_ZERO_REPO_INSTALLATIONS is set, each repo gets
+    # its own installation token via routing.py. Unset keeps the original
+    # single-installation behavior untouched.
+    from surface_zero.routing import (
+        build_routed_clients,
+        load_app_credentials_from_env,
+        parse_repo_installations,
+    )
+
+    repo_installations = parse_repo_installations(os.environ.get("SURFACE_ZERO_REPO_INSTALLATIONS"))
+    if repo_installations is not None:
+        app_id, private_key = load_app_credentials_from_env()
+        poster, candidate_fetcher = build_routed_clients(
+            app_id=app_id,
+            private_key_pem=private_key,
+            repo_installations=repo_installations,
+        )
+    else:
+        poster = GitHubCommentPoster.from_env()
+        candidate_fetcher = GitHubCandidateFetcher.from_env()
+
+    allowed = parse_repo_list(os.environ.get("SURFACE_ZERO_ALLOWED_REPOS"))
+    if len(label_sets) > 1:
+        if allowed is None:
+            raise RuntimeError("multiple label sets require SURFACE_ZERO_ALLOWED_REPOS")
+        missing = {r for r in allowed if r.lower() not in agents_by_repo}
+        if missing:
+            raise RuntimeError(f"allowlisted repos with no label set: {sorted(missing)}")
+
     return create_app(
         webhook_secret=webhook_secret,
         ledger=Ledger(ledger_path),
         kill_switch=KillSwitch(kill_switch_path),
-        agent=Advisor.from_env(label_set),
-        poster=GitHubCommentPoster.from_env(),
+        agent=agents_by_repo[label_set.repo.lower()],
+        agents_by_repo=agents_by_repo if len(label_sets) > 1 else None,
+        poster=poster,
         metrics_token=metrics_token,
-        candidate_fetcher=GitHubCandidateFetcher.from_env(),
-        allowed_repos=parse_repo_list(os.environ.get("SURFACE_ZERO_ALLOWED_REPOS")),
+        candidate_fetcher=candidate_fetcher,
+        allowed_repos=allowed,
         shadow_repos=parse_repo_list(os.environ.get("SURFACE_ZERO_SHADOW_REPOS")) or frozenset(),
     )
 
