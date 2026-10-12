@@ -115,3 +115,37 @@ def test_build_copy_uses_the_title_override_and_still_neutralizes_it():
         title="Filed as @someone",
     )
     assert title == "Filed as `@someone`"
+
+
+def test_fork_network_shorthand_owner_hash_n_is_defused_in_copies():
+    assert neutralize("same as Futsch1#544 and Futsch1/medTimer#12") == "same as `Futsch1#544` and `Futsch1/medTimer#12`"
+
+
+def test_defuse_wraps_mentions_and_foreign_references_in_model_text():
+    from surface_zero.issue_import import defuse_foreign_refs
+
+    out = defuse_foreign_refs("thanks @alice, copy of original Futsch1#544 and other/repo#9", "ForgeAS/medTimer-replay")
+    assert out == "thanks `@alice`, copy of original `Futsch1#544` and `other/repo#9`"
+
+
+def test_defuse_leaves_own_repo_and_bare_references_alone():
+    from surface_zero.issue_import import defuse_foreign_refs
+
+    text = "duplicate of #59 and ForgeAS/medTimer-replay#60"
+    assert defuse_foreign_refs(text, "ForgeAS/medTimer-replay") == text
+
+
+def test_defuse_wraps_urls_to_other_repos_but_not_the_own_repo():
+    from surface_zero.issue_import import defuse_foreign_refs
+
+    own = "https://github.com/ForgeAS/medTimer-replay/issues/3"
+    foreign = "https://github.com/Futsch1/medTimer/issues/544"
+    out = defuse_foreign_refs(f"see {own} and {foreign}", "ForgeAS/medTimer-replay")
+    assert own in out and f"`{foreign}`" in out and f"`{own}`" not in out
+
+
+def test_defuse_does_not_touch_code_spans_and_handles_empty():
+    from surface_zero.issue_import import defuse_foreign_refs
+
+    assert defuse_foreign_refs("run `git log @head` now", "a/b") == "run `git log @head` now"
+    assert defuse_foreign_refs(None, "a/b") == ""

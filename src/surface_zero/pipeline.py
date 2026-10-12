@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from surface_zero.comment_poster import CommentPoster
 from surface_zero.killswitch import KillSwitch
+from surface_zero.issue_import import defuse_foreign_refs
 from surface_zero.ledger import OutboundAction
 from surface_zero.runner import AgentResult, OutboundResult, RunRequest
 
@@ -32,7 +33,15 @@ def render_comment(
     duplicate_rationale: str | None = None,
     duplicate_of_state: str | None = None,
     duplicate_of_state_reason: str | None = None,
+    repo: str | None = None,
 ) -> str:
+    # Model-written text is defused before posting: it may echo @mentions or
+    # cross-repo references from the issue it read, each of which has a real
+    # side effect on someone else (a notification, or a backlink on another
+    # repo's issue). The structured parts we generate ourselves are untouched.
+    rationale = defuse_foreign_refs(rationale, repo)
+    if duplicate_rationale:
+        duplicate_rationale = defuse_foreign_refs(duplicate_rationale, repo)
     if duplicate_of is None:
         duplicate_line = ""
     elif duplicate_of_state == "closed":
@@ -105,6 +114,7 @@ def build_outbound_handler(
                 duplicate_rationale,
                 duplicate_of_state,
                 duplicate_of_state_reason,
+                repo=request.target,
             ),
         )
         return OutboundResult(

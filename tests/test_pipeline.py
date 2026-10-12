@@ -199,3 +199,21 @@ def test_non_shadow_repo_still_posts_when_another_repo_is_shadowed(ledger, kill_
     run_request(request(), label_agent, ledger, outbound=handler)
 
     assert len(poster.calls) == 1
+
+
+def test_rendered_comment_defuses_mentions_and_foreign_references_in_model_text():
+    body = render_comment(
+        "bug",
+        "Reported by @someone, copy of original Futsch1#544.",
+        duplicate_of=5,
+        duplicate_rationale="Same as other/repo#9 per @maintainer.",
+        repo="fixture/example-repo",
+    )
+    assert "`@someone`" in body and "`Futsch1#544`" in body
+    assert "`other/repo#9`" in body and "`@maintainer`" in body
+    assert "Possible duplicate of #5:" in body  # our own structured reference stays a real link
+
+
+def test_rendered_comment_keeps_own_repo_references_as_links():
+    body = render_comment("bug", "See #12 and fixture/example-repo#13.", repo="fixture/example-repo")
+    assert "See #12 and fixture/example-repo#13." in body

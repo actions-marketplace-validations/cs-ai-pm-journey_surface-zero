@@ -37,7 +37,11 @@ _ATTACHMENT = re.compile(
 _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 # Any github.com issue/PR/discussion/commit URL: these generate backlinks.
 _GH_URL = re.compile(r"https?://(?:www\.)?github\.com/[^\s)>\]]+/(?:issues|pull|discussions|commit)/[^\s)>\]]+")
-_CROSS_REF = re.compile(r"(?<![\w`/])([A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+)#(\d+)")
+# owner/repo#N, and also the fork-network shorthand owner#N, which GitHub
+# autolinks to the parent repo when the target repo is a fork of it (seen
+# 2026-10-12: a bot comment on the replay fork rendered a live link to the
+# original issue). Bare #N has no prefix and is not matched.
+_CROSS_REF = re.compile(r"(?<![\w`/&])([A-Za-z0-9][A-Za-z0-9-]*(?:/[A-Za-z0-9_.-]+)?)#(\d+)\b")
 _BARE_REF = re.compile(r"(?<![\w`/&])#(\d+)\b")
 _MENTION = re.compile(r"(?<![\w`/@])@([A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:/[A-Za-z0-9_.-]+)?)")
 
@@ -158,3 +162,46 @@ def assert_safe_target(repo: str) -> None:
     owner = ORIGINAL_REPO.split("/")[0].lower()
     if "/" not in repo or repo.lower() == ORIGINAL_REPO.lower() or repo.split("/")[0].lower() == owner:
         raise UnsafeTargetError(f"refusing to import into {repo!r}: that is the original repo or its owner")
+
+
+def defuse_foreign_refs(text: str | None, own_repo: str | None) -> str:
+    """Make model-written comment text safe to post.
+
+    Removes the side effects the bot itself could cause by repeating text it
+    read: @mentions notify real users, and references or URLs pointing at any
+    OTHER repository create cross-reference entries on that repository's
+    issues. References to ``own_repo`` are left alone, as are bare ``#N``
+    references (they can only point inside the repo being commented on) and
+    anything already inside a code span or fenced block.
+    """
+    if not text:
+        return ""
+    own = (own_repo or "").lower()
+
+    def ref(m):
+        target = m.group(1).lower()
+        if "/" in target and target == own:
+            return m.group(0)
+        return f"`{m.group(1)}#{m.group(2)}`"
+
+    def url(m):
+        found = m.group(0)
+        parts = found.split("github.com/", 1)[1].split("/")
+        if len(parts) >= 2 and f"{parts[0]}/{parts[1]}".lower() == own:
+            return found
+        return f"`{found}`"
+
+    def plain(chunk: str) -> str:
+        chunk = _GH_URL.sub(url, chunk)
+        chunk = _CROSS_REF.sub(ref, chunk)
+        chunk = _MENTION.sub(lambda m: f"`@{m.group(1)}`", chunk)
+        return chunk
+
+    out: list[str] = []
+    for part in _FENCE.split(text):
+        if _FENCE.fullmatch(part):
+            out.append(part)
+            continue
+        for piece in _INLINE_CODE.split(part):
+            out.append(piece if _INLINE_CODE.fullmatch(piece) else plain(piece))
+    return "".join(out)
