@@ -289,3 +289,102 @@ def test_comment_poster_accepts_a_token_provider_instead_of_a_bare_string():
     # confirms the provider is consulted live rather than the token being
     # captured once at construction time, which matters once it can expire.
     assert len(get_calls) == 3
+
+
+# --- Declared-permission check (added 2026-10-12): the contents probe false-positives on public repos ---
+
+
+class _DeclaredPermsProvider:
+    def __init__(self, perms):
+        self._perms = perms
+
+    def get_token(self) -> str:
+        return "app-token"
+
+    def granted_permissions(self):
+        return self._perms
+
+
+def _public_repo_handler(request: httpx.Request) -> httpx.Response:
+    if request.url.path == f"/repos/{REPO}":
+        return httpx.Response(200, json={"full_name": REPO})
+    if request.url.path == f"/repos/{REPO}/contents":
+        # A PUBLIC repo: contents are readable by anyone, whatever the token's permissions.
+        return httpx.Response(200, json=[])
+    if request.url.path == f"/repos/{REPO}/issues/7/comments":
+        return httpx.Response(201, json={"html_url": "https://github.com/x/y/issues/7#comment"})
+    raise AssertionError(f"unexpected request: {request.method} {request.url.path}")
+
+
+def _poster_with_provider(provider, handler) -> GitHubCommentPoster:
+    client = httpx.Client(transport=httpx.MockTransport(handler), base_url="https://api.github.com")
+    return GitHubCommentPoster(provider, client=client)
+
+
+def test_issues_only_app_token_is_accepted_on_a_public_repo():
+    """The regression: on a public repo the contents probe returns 200 for any
+    token. An App token that DECLARES Issues-only must be accepted anyway."""
+    poster = _poster_with_provider(
+        _DeclaredPermsProvider({"issues": "write", "metadata": "read"}), _public_repo_handler
+    )
+    assert poster.post_comment(repo=REPO, issue_number=7, body="x").endswith("#comment")
+
+
+def test_declared_permissions_skip_the_contents_probe_entirely():
+    seen = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        return _public_repo_handler(request)
+
+    _poster_with_provider(
+        _DeclaredPermsProvider({"issues": "write", "metadata": "read"}), handler
+    ).post_comment(repo=REPO, issue_number=7, body="x")
+    assert f"/repos/{REPO}/contents" not in seen
+
+
+@pytest.mark.parametrize(
+    "perms, name",
+    [
+        ({"issues": "write", "metadata": "read", "contents": "read"}, "contents"),
+        ({"issues": "write", "metadata": "read", "pull_requests": "write"}, "pull_requests"),
+        ({"issues": "admin", "metadata": "read"}, "issues"),
+        ({"issues": "write", "metadata": "write"}, "metadata"),
+    ],
+)
+def test_app_token_with_any_extra_or_stronger_permission_is_refused(perms, name):
+    poster = _poster_with_provider(_DeclaredPermsProvider(perms), _public_repo_handler)
+    with pytest.raises(GitHubTokenScopeError, match=name):
+        poster.post_comment(repo=REPO, issue_number=7, body="x")
+
+
+def test_provider_without_declared_permissions_still_falls_back_to_the_probe():
+    poster = _poster_with_provider(_DeclaredPermsProvider(None), _public_repo_handler)
+    with pytest.raises(GitHubTokenScopeError, match="contents"):
+        poster.post_comment(repo=REPO, issue_number=7, body="x")
+
+
+def test_app_token_provider_records_the_permissions_github_reports():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            201,
+            json={"token": "t", "expires_at": "2099-01-01T00:00:00Z",
+                  "permissions": {"issues": "write", "metadata": "read"}},
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler), base_url="https://api.github.com")
+    provider = GitHubAppTokenProvider(
+        app_id="1", private_key_pem=_TEST_PRIVATE_KEY_PEM, installation_id="9", client=client
+    )
+    assert provider.granted_permissions() == {"issues": "write", "metadata": "read"}
+
+
+def test_app_token_provider_reports_none_when_github_omits_permissions():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(201, json={"token": "t", "expires_at": "2099-01-01T00:00:00Z"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler), base_url="https://api.github.com")
+    provider = GitHubAppTokenProvider(
+        app_id="1", private_key_pem=_TEST_PRIVATE_KEY_PEM, installation_id="9", client=client
+    )
+    assert provider.granted_permissions() is None

@@ -106,6 +106,7 @@ class GitHubAppTokenProvider:
         self._client = client or httpx.Client(base_url=GITHUB_API, timeout=15.0)
         self._cached_token: str | None = None
         self._cached_expires_at: float = 0.0
+        self._permissions: dict[str, str] | None = None
 
     def _mint_jwt(self) -> str:
         now = int(time.time())
@@ -128,10 +129,22 @@ class GitHubAppTokenProvider:
         )
         response.raise_for_status()
         data = response.json()
+        # GitHub states exactly which permissions this token carries. That is
+        # the authoritative answer to "is this token Issues-only?", unlike
+        # probing endpoints, which cannot distinguish "no permission" from
+        # "the repo is public".
+        perms = data.get("permissions")
+        self._permissions = dict(perms) if isinstance(perms, dict) else None
         # expires_at is an ISO 8601 timestamp; we only need a rough deadline
         # for our own refresh-margin check, not to reparse GitHub's format.
         expires_in_seconds = 60 * 60  # GitHub Apps: always 1 hour, as documented
         return data["token"], time.time() + expires_in_seconds
+
+    def granted_permissions(self) -> dict[str, str] | None:
+        """Permissions GitHub reported for the current installation token, or
+        None if it did not report any. Refreshes the token first if needed."""
+        self.get_token()
+        return self._permissions
 
     def get_token(self) -> str:
         if self._cached_token is None or time.time() >= (
@@ -147,6 +160,14 @@ class CommentPoster(Protocol):
         the caller (pipeline.build_outbound_handler) is responsible for
         making sure that failure reaches the ledger."""
         ...
+
+
+# What an advisory, comment-only bot may ever hold. Anything else is refused.
+# Metadata: read is attached to every GitHub App automatically.
+_ALLOWED_PERMISSIONS: dict[str, tuple[str, ...]] = {
+    "issues": ("read", "write"),
+    "metadata": ("read",),
+}
 
 
 class GitHubTokenScopeError(Exception):
@@ -261,6 +282,35 @@ class GitHubCommentPoster:
                 "posting to whatever this actually is"
             )
 
+        # Preferred check: if the token provider knows exactly what GitHub
+        # granted (App installation tokens do), verify that directly and skip
+        # the contents probe below. The probe cannot tell "no Contents
+        # permission" from "this repo is public and anyone can read it", so on
+        # a public repo it always looked like over-permission (found
+        # 2026-10-12 on the MedTimer replay fork; it would have blocked every
+        # public target, including the Nuts repo).
+        declared = getattr(self._token_provider, "granted_permissions", None)
+        if callable(declared):
+            perms = declared()
+            if perms is not None:
+                excess = {
+                    name: level
+                    for name, level in perms.items()
+                    if level not in _ALLOWED_PERMISSIONS.get(name, ())
+                }
+                if excess:
+                    raise GitHubTokenScopeError(
+                        f"installation token for {repo!r} has permissions beyond "
+                        f"Issues-only: {excess}. An advisory-only, comment-only bot "
+                        "should have only Issues: read/write (Metadata: read is "
+                        "added by GitHub automatically). Remove the extra permissions "
+                        "from the App's installed permissions."
+                    )
+                self._verified_repos.add(repo)
+                return
+
+        # Fallback for tokens that cannot state their own permissions (a
+        # personal access token): functional probe, below.
         # Deliberately NOT checking the `permissions` object GitHub returns
         # here: that field reflects the authenticated *user's* role on the
         # repo, not this specific token's granted scope. For a repo Adam
