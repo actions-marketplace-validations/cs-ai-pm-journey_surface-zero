@@ -146,8 +146,6 @@ def load_config(env: Mapping[str, str]) -> ActionConfig:
     # asking for them fails loudly: an input that is silently ignored would be
     # a lie about what the Action does.
     not_yet = []
-    if threshold > 0.0:
-        not_yet.append("confidence-threshold above 0")
     if duplicates:
         not_yet.append("duplicates: true")
     if summaries:
@@ -393,7 +391,7 @@ def main(env: Mapping[str, str] | None = None) -> int:
         result = run(
             env,
             github=ActionGitHub(config.github_token),
-            advisor_factory=lambda label_set: Advisor(client, label_set),
+            advisor_factory=lambda label_set: Advisor(client, label_set, confidence_threshold=config.confidence_threshold),
             poster=GitHubCommentPoster(config.github_token, scope_policy="workflow"),
             ledger=ledger,
             config=config,

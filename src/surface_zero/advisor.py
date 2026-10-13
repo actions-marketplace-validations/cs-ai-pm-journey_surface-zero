@@ -103,6 +103,7 @@ def _duplicate_state(duplicate_of: int | None, payload: dict[str, Any]) -> tuple
 class SuggestLabelInput(BaseModel):
     label: str
     rationale: str
+    confidence: float | None = None
     duplicate_of: int | None = None
     duplicate_rationale: str | None = None
 
@@ -129,6 +130,14 @@ def _tools(label_set: LabelSet) -> list[dict[str, Any]]:
                         "type": "string",
                         "description": "One sentence explaining the match, in the repo's own terms.",
                     },
+                    "confidence": {
+                        "type": "number",
+                        "description": (
+                            "Your probability, from 0 to 1, that a maintainer reading this issue "
+                            "would choose this label. 0.5 means a coin flip between this label "
+                            "and another. Use the whole range."
+                        ),
+                    },
                     "duplicate_of": {
                         "type": ["integer", "null"],
                         "description": (
@@ -142,7 +151,7 @@ def _tools(label_set: LabelSet) -> list[dict[str, Any]]:
                         "description": "One sentence explaining the overlap. Required if duplicate_of is set.",
                     },
                 },
-                "required": ["label", "rationale"],
+                "required": ["label", "rationale", "confidence"],
             },
         },
         {
@@ -227,10 +236,17 @@ def _cost_usd(usage: Any) -> float:
 class Advisor:
     """Wraps an Anthropic client and a LabelSet into a runner-compatible agent."""
 
-    def __init__(self, client: AnthropicLike, label_set: LabelSet, model: str = DEFAULT_MODEL):
+    def __init__(
+        self,
+        client: AnthropicLike,
+        label_set: LabelSet,
+        model: str = DEFAULT_MODEL,
+        confidence_threshold: float = 0.0,
+    ):
         self.client = client
         self.label_set = label_set
         self.model = model
+        self.confidence_threshold = confidence_threshold
 
     @classmethod
     def from_env(cls, label_set: LabelSet, model: str = DEFAULT_MODEL) -> Advisor:
@@ -320,7 +336,25 @@ class Advisor:
                     f"{self.label_set.repo}'s label set"
                 )
             _validate_duplicate_reference(parsed.duplicate_of, payload)
+            confidence = parsed.confidence
+            if confidence is not None and not 0.0 <= confidence <= 1.0:
+                confidence = None  # out-of-range is treated as not reported
+            if self.confidence_threshold > 0.0 and (confidence is None or confidence < self.confidence_threshold):
+                # Fail safe: below the maintainer's threshold, or no usable confidence, means
+                # say nothing. Recorded as an abstention so the withheld label stays auditable.
+                shown = "not reported" if confidence is None else f"{confidence:.2f}"
+                return AgentResult(
+                    response={
+                        "reason": f"Confidence {shown} is below the threshold {self.confidence_threshold:.2f}.",
+                        "withheld_label": parsed.label,
+                        "withheld_rationale": parsed.rationale,
+                        "confidence": confidence,
+                    },
+                    abstained=True,
+                )
             response: dict[str, Any] = {"suggested_label": parsed.label, "rationale": parsed.rationale}
+            if confidence is not None:
+                response["confidence"] = confidence
             if parsed.duplicate_of is not None:
                 response["duplicate_of"] = parsed.duplicate_of
                 response["duplicate_rationale"] = parsed.duplicate_rationale

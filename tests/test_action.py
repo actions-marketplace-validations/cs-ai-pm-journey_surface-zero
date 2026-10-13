@@ -88,7 +88,7 @@ def test_threshold_must_be_a_number_between_0_and_1(tmp_path, raw):
 
 @pytest.mark.parametrize(
     "name,value",
-    [("INPUT_DUPLICATES", "true"), ("INPUT_SUMMARIES", "true"), ("INPUT_CONFIDENCE-THRESHOLD", "0.7")],
+    [("INPUT_DUPLICATES", "true"), ("INPUT_SUMMARIES", "true")],
 )
 def test_features_not_yet_built_fail_loudly_instead_of_being_ignored(tmp_path, name, value):
     with pytest.raises(ConfigError, match="Not available in this version"):
@@ -175,8 +175,11 @@ class Recorder:
         return httpx.Client(transport=httpx.MockTransport(self.handler), base_url="https://api.github.com")
 
 
-def suggest(label="bug"):
-    return FakeResponse(content=[ToolUseBlock(name="suggest_label", input={"label": label, "rationale": "It crashes."})])
+def suggest(label="bug", confidence=0.9):
+    inp = {"label": label, "rationale": "It crashes."}
+    if confidence is not None:
+        inp["confidence"] = confidence
+    return FakeResponse(content=[ToolUseBlock(name="suggest_label", input=inp)])
 
 
 def go(tmp_path, rec, model, env=None, config=None):
@@ -186,7 +189,7 @@ def go(tmp_path, rec, model, env=None, config=None):
     result = run(
         env,
         github=ActionGitHub("gh-test", client=rec.client()),
-        advisor_factory=lambda ls: Advisor(model, ls),
+        advisor_factory=lambda ls: Advisor(model, ls, confidence_threshold=cfg.confidence_threshold),
         poster=GitHubCommentPoster("gh-test", client=rec.client(), scope_policy="workflow"),
         ledger=ledger,
         config=cfg,
@@ -281,3 +284,43 @@ def test_outputs_and_summary_and_record_are_written(tmp_path):
     assert "suggested" in (tmp_path / "summary.md").read_text()
     data = json.loads(record.read_text())
     assert data["runs"][0]["llm_calls"], "the model call must be in the exported record"
+
+
+# -------------------------------------------------------------- confidence
+
+
+def test_threshold_zero_posts_regardless_of_confidence(tmp_path):
+    rec = Recorder()
+    result, _ = go(tmp_path, rec, FakeAnthropic([suggest("bug", confidence=0.1)]))
+    assert result.result == "suggested" and len(rec.posts) == 1
+
+
+def test_confidence_at_or_above_threshold_posts(tmp_path):
+    rec = Recorder()
+    env = base_env(tmp_path, **{"INPUT_CONFIDENCE-THRESHOLD": "0.7"})
+    result, _ = go(tmp_path, rec, FakeAnthropic([suggest("bug", confidence=0.7)]), env=env)
+    assert result.result == "suggested" and len(rec.posts) == 1
+
+
+def test_confidence_below_threshold_posts_nothing_and_records_the_withheld_label(tmp_path):
+    rec = Recorder()
+    env = base_env(tmp_path, **{"INPUT_CONFIDENCE-THRESHOLD": "0.7"})
+    result, ledger = go(tmp_path, rec, FakeAnthropic([suggest("bug", confidence=0.4)]), env=env)
+    assert result.result == "abstained" and rec.posts == []
+    stored = ledger.list_runs()[0].response
+    assert stored["withheld_label"] == "bug" and stored["confidence"] == 0.4
+
+
+@pytest.mark.parametrize("bad", [None, 1.7, -0.2])
+def test_missing_or_out_of_range_confidence_fails_safe_when_a_threshold_is_set(tmp_path, bad):
+    rec = Recorder()
+    env = base_env(tmp_path, **{"INPUT_CONFIDENCE-THRESHOLD": "0.5"})
+    result, _ = go(tmp_path, rec, FakeAnthropic([suggest("bug", confidence=bad)]), env=env)
+    assert result.result == "abstained" and rec.posts == []
+
+
+def test_the_confidence_field_is_required_in_the_tool_schema(tmp_path):
+    model = FakeAnthropic([suggest()])
+    go(tmp_path, Recorder(), model)
+    schema = model.messages.calls[0]["tools"][0]["input_schema"]
+    assert "confidence" in schema["required"]
