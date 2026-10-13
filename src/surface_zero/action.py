@@ -383,7 +383,14 @@ def run_stats(ledger: Ledger, result: ActionResult, threshold: float = 0.0) -> s
         f"{sum(c.output_tokens or 0 for c in calls)} output tokens",
         f"cost ${sum(c.cost_usd or 0.0 for c in calls):.4f}",
     ]
-    confidence = (run_rec.response or {}).get("confidence") if run_rec else None
+    response = (run_rec.response or {}) if run_rec else {}
+    if run_rec and run_rec.status == RunStatus.ABSTAINED:
+        # Two different silences, and a maintainer tuning a threshold needs to tell them apart.
+        if "withheld_label" in response:
+            parts.insert(0, f"withheld '{response['withheld_label']}' (below the confidence threshold)")
+        else:
+            parts.insert(0, "the model chose to abstain")
+    confidence = response.get("confidence")
     parts.append("confidence not reported" if confidence is None else f"confidence {confidence:.2f}")
     if threshold > 0.0:
         parts.append(f"threshold {threshold:.2f}")

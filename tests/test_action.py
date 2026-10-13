@@ -355,3 +355,14 @@ def test_stats_line_lands_in_the_job_summary(tmp_path):
     result, ledger = go(tmp_path, Recorder(), FakeAnthropic([suggest("bug")]), env=env)
     write_outputs(env, result, None, run_stats(ledger, result))
     assert "cost $" in (tmp_path / "summary.md").read_text()
+
+
+def test_summary_distinguishes_a_model_abstention_from_a_withheld_label(tmp_path):
+    model = FakeAnthropic([FakeResponse(content=[ToolUseBlock(name="abstain", input={"reason": "unclear"})])])
+    result, ledger = go(tmp_path, Recorder(), model)
+    assert "the model chose to abstain" in run_stats(ledger, result)
+
+    env = base_env(tmp_path, **{"INPUT_CONFIDENCE-THRESHOLD": "0.9"})
+    result, ledger = go(tmp_path, Recorder(), FakeAnthropic([suggest("bug", confidence=0.5)]), env=env)
+    line = run_stats(ledger, result, 0.9)
+    assert "withheld 'bug'" in line and "the model chose to abstain" not in line
