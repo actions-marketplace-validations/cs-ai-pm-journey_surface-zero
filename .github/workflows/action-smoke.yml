@@ -5,14 +5,18 @@ name: Action smoke
 on:
   workflow_dispatch:
 
+# 'permissions:' drops every scope not listed. Checkout needs contents: read to clone a private
+# repo; without it GitHub reports the repo as 'not found'. Tenants calling the published Action do
+# not use checkout and need only issues: write.
 permissions:
+  contents: read
   issues: write
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Valid inputs, non-issue event (builds the image, runs the entrypoint, calls no model)
         id: ok
