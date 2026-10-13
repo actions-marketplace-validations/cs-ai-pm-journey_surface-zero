@@ -388,3 +388,43 @@ def test_app_token_provider_reports_none_when_github_omits_permissions():
         app_id="1", private_key_pem=_TEST_PRIVATE_KEY_PEM, installation_id="9", client=client
     )
     assert provider.granted_permissions() is None
+
+
+# --- scope_policy="workflow" (GitHub Action; the workflow token cannot state its permissions) ---
+
+
+def test_workflow_policy_accepts_a_public_repo_and_never_runs_the_contents_probe():
+    """The probe wrongly refuses every public repo (anyone can read public
+    contents). In the Action the token is the workflow's GITHUB_TOKEN, so the
+    permission half of the check is skipped and only repo identity is verified."""
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append((request.method, request.url.path))
+        if request.url.path == f"/repos/{REPO}":
+            return httpx.Response(200, json={"full_name": REPO})
+        if request.url.path == f"/repos/{REPO}/contents":
+            return httpx.Response(200, json=[])  # public repo: readable by anyone
+        if request.url.path == f"/repos/{REPO}/issues/1/comments":
+            return httpx.Response(201, json={"html_url": "https://example/c"})
+        raise AssertionError(request.url.path)
+
+    client = httpx.Client(transport=httpx.MockTransport(handler), base_url="https://api.github.com")
+    poster = GitHubCommentPoster("t", client=client, scope_policy="workflow")
+    assert poster.post_comment(repo=REPO, issue_number=1, body="x") == "https://example/c"
+    assert ("GET", f"/repos/{REPO}/contents") not in calls
+
+
+def test_workflow_policy_still_refuses_a_repo_identity_mismatch():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"full_name": "someone/else"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler), base_url="https://api.github.com")
+    poster = GitHubCommentPoster("t", client=client, scope_policy="workflow")
+    with pytest.raises(GitHubTokenScopeError):
+        poster.post_comment(repo=REPO, issue_number=1, body="x")
+
+
+def test_unknown_scope_policy_is_rejected():
+    with pytest.raises(ValueError):
+        GitHubCommentPoster("t", scope_policy="whatever")

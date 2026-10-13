@@ -34,6 +34,7 @@ def render_comment(
     duplicate_of_state: str | None = None,
     duplicate_of_state_reason: str | None = None,
     repo: str | None = None,
+    footer: str | None = None,
 ) -> str:
     # Model-written text is defused before posting: it may echo @mentions or
     # cross-repo references from the issue it read, each of which has a real
@@ -59,9 +60,13 @@ def render_comment(
     return (
         f"Suggested label: **{label}**\n\n{rationale}{duplicate_line}\n\n"
         "---\n"
-        "_Posted by an advisory-only bot. It can't apply this label, only "
-        "suggest it, comment `stop bot` any time to turn it off before its "
-        "next run._"
+        + (
+            footer
+            if footer is not None
+            else "_Posted by an advisory-only bot. It can't apply this label, only "
+            "suggest it, comment `stop bot` any time to turn it off before its "
+            "next run._"
+        )
     )
 
 
@@ -69,6 +74,7 @@ def build_outbound_handler(
     poster: CommentPoster,
     kill_switch: KillSwitch,
     shadow_repos: frozenset[str] = frozenset(),
+    footer: str | None = None,
 ):
     """shadow_repos: repos (case-insensitive) where the agent runs and the
     ledger records its recommendation but the poster is never called. Checked
@@ -115,6 +121,7 @@ def build_outbound_handler(
                 duplicate_of_state,
                 duplicate_of_state_reason,
                 repo=request.target,
+                footer=footer,
             ),
         )
         return OutboundResult(

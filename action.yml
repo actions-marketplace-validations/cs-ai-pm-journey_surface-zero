@@ -1,0 +1,47 @@
+name: 'Surface Zero Label Advisor'
+description: 'Advisory-only issue triage: suggests one label as a comment on new issues. Never applies labels or closes anything.'
+author: 'cs-ai-pm-journey'
+branding:
+  icon: 'tag'
+  color: 'blue'
+
+inputs:
+  anthropic-api-key:
+    description: 'Your Anthropic API key. Store it as a repository secret and pass it in. Issue text is sent to Anthropic under this key.'
+    required: true
+  github-token:
+    description: 'Token used to read labels and post one comment. Leave at the default and give the job "permissions: issues: write".'
+    required: false
+    default: ${{ github.token }}
+  labels:
+    description: 'Comma-separated label names the advisor may suggest. Default: all repository labels except duplicate, invalid and wontfix.'
+    required: false
+    default: ''
+  confidence-threshold:
+    description: 'Reserved. Must be 0 in this version.'
+    required: false
+    default: '0'
+  duplicates:
+    description: 'Reserved. Must be false in this version.'
+    required: false
+    default: 'false'
+  summaries:
+    description: 'Reserved. Must be false in this version.'
+    required: false
+    default: 'false'
+  dry-run:
+    description: 'If true, runs the advisor and records its suggestion but posts nothing. Recommended for the first run.'
+    required: false
+    default: 'false'
+
+outputs:
+  result:
+    description: 'suggested, dry-run, abstained, skipped or failed.'
+  label:
+    description: 'The suggested label, if any.'
+  run-record:
+    description: 'Path to surface-zero-run.json in the workspace (the run record).'
+
+runs:
+  using: 'docker'
+  image: 'action.Dockerfile'

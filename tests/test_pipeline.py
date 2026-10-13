@@ -217,3 +217,14 @@ def test_rendered_comment_defuses_mentions_and_foreign_references_in_model_text(
 def test_rendered_comment_keeps_own_repo_references_as_links():
     body = render_comment("bug", "See #12 and fixture/example-repo#13.", repo="fixture/example-repo")
     assert "See #12 and fixture/example-repo#13." in body
+
+
+def test_a_custom_footer_replaces_the_default_one():
+    body = render_comment("bug", "It crashes.", footer="_Custom footer._")
+    assert body.rstrip().endswith("_Custom footer._")
+    assert "stop bot" not in body
+
+
+def test_the_default_footer_is_unchanged_for_the_hosted_service():
+    body = render_comment("bug", "It crashes.")
+    assert "comment `stop bot` any time" in body

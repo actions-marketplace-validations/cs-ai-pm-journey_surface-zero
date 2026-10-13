@@ -181,9 +181,29 @@ class GitHubCommentPoster:
     that check exists even though (especially because) this runs against a
     repo Adam owns."""
 
-    def __init__(self, token: str | TokenProvider, *, client: httpx.Client | None = None):
+    def __init__(
+        self,
+        token: str | TokenProvider,
+        *,
+        client: httpx.Client | None = None,
+        scope_policy: str = "verify",
+    ):
+        """scope_policy:
+        "verify" (default): confirm the repo identity AND the token's own
+            permissions (declared permissions, or the contents probe for PATs).
+        "workflow": confirm the repo identity only. For the GitHub Action,
+            where the token is the workflow's GITHUB_TOKEN: its permissions
+            are set by the tenant's `permissions:` block and cannot be read
+            back from the token, and the contents probe wrongly refuses every
+            public repo (anyone can read a public repo's contents). Weaker
+            than "verify" by design; the Install Guide requires
+            `permissions: issues: write` and says so.
+        """
         if not token:
             raise ValueError("GitHubCommentPoster requires a token")
+        if scope_policy not in ("verify", "workflow"):
+            raise ValueError(f"unknown scope_policy {scope_policy!r}")
+        self._scope_policy = scope_policy
         self._token_provider: TokenProvider = (
             token if hasattr(token, "get_token") else StaticToken(token)
         )
@@ -281,6 +301,10 @@ class GitHubCommentPoster:
                 f"path resolves to {actual_repo!r} -- refusing rather than "
                 "posting to whatever this actually is"
             )
+
+        if self._scope_policy == "workflow":
+            self._verified_repos.add(repo)
+            return
 
         # Preferred check: if the token provider knows exactly what GitHub
         # granted (App installation tokens do), verify that directly and skip

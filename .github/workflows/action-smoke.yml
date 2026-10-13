@@ -1,0 +1,46 @@
+name: Action smoke
+
+# Exercises the real Action container through the same interface a tenant uses.
+# Manual only: it must not spend API credit on every issue opened in this repo.
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Valid inputs, non-issue event (builds the image, runs the entrypoint, calls no model)
+        id: ok
+        uses: ./
+        with:
+          # A placeholder is fine here: a manual dispatch is skipped before any model call.
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY || 'smoke-test-placeholder' }}
+          dry-run: 'true'
+
+      - name: Expect "skipped"
+        run: test "${{ steps.ok.outputs.result }}" = "skipped"
+
+      - name: Missing API key must fail with guidance
+        id: nokey
+        uses: ./
+        continue-on-error: true
+        with:
+          anthropic-api-key: ''
+
+      - name: Malformed input must fail
+        id: badbool
+        uses: ./
+        continue-on-error: true
+        with:
+          anthropic-api-key: 'smoke-test-placeholder'
+          dry-run: 'maybe'
+
+      - name: Expect both setup errors to have failed the step
+        run: |
+          test "${{ steps.nokey.outcome }}" = "failure"
+          test "${{ steps.badbool.outcome }}" = "failure"
