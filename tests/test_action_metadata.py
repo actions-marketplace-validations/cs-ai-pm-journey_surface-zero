@@ -73,3 +73,10 @@ def test_no_secret_looking_value_is_in_the_metadata():
     raw = (ROOT / "action.yml").read_text()
     for needle in ("sk-ant", "ghp_", "github_pat_", "BEGIN PRIVATE KEY"):
         assert needle not in raw
+
+
+def test_action_image_does_not_float_on_latest_tools():
+    """A tenant's install must not change because an upstream tool released a new version."""
+    dockerfile = (ROOT / "action.Dockerfile").read_text()
+    assert ":latest" not in dockerfile
+    assert "ghcr.io/astral-sh/uv:0.12.7" in dockerfile

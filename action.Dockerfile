@@ -2,7 +2,7 @@
 # is separate on purpose so a change to the service build cannot change what tenants run.
 FROM python:3.14-slim
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.7 /uv /uvx /usr/local/bin/
 
 WORKDIR /app
 
