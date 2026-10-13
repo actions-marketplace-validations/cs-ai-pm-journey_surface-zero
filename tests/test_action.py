@@ -13,6 +13,7 @@ from surface_zero.action import (
     load_config,
     load_event,
     run,
+    run_stats,
     write_outputs,
 )
 from surface_zero.advisor import Advisor
@@ -324,3 +325,33 @@ def test_the_confidence_field_is_required_in_the_tool_schema(tmp_path):
     go(tmp_path, Recorder(), model)
     schema = model.messages.calls[0]["tools"][0]["input_schema"]
     assert "confidence" in schema["required"]
+
+
+# ------------------------------------------------------------ summary stats
+
+
+def test_summary_reports_tokens_cost_and_confidence(tmp_path):
+    result, ledger = go(tmp_path, Recorder(), FakeAnthropic([suggest("bug", confidence=0.83)]))
+    line = run_stats(ledger, result, 0.0)
+    assert "input tokens" in line and "output tokens" in line and "cost $" in line
+    assert "confidence 0.83" in line and "threshold" not in line
+
+
+def test_summary_shows_the_threshold_when_one_is_set(tmp_path):
+    env = base_env(tmp_path, **{"INPUT_CONFIDENCE-THRESHOLD": "0.7"})
+    result, ledger = go(tmp_path, Recorder(), FakeAnthropic([suggest("bug", confidence=0.4)]), env=env)
+    line = run_stats(ledger, result, 0.7)
+    assert result.result == "abstained" and "confidence 0.40" in line and "threshold 0.70" in line
+
+
+def test_summary_says_plainly_when_no_model_call_was_made(tmp_path):
+    rec = Recorder(comments=[{"body": MARKER}])
+    result, ledger = go(tmp_path, rec, FakeAnthropic([suggest()]))
+    assert run_stats(ledger, result) == "No model call was made."
+
+
+def test_stats_line_lands_in_the_job_summary(tmp_path):
+    env = base_env(tmp_path)
+    result, ledger = go(tmp_path, Recorder(), FakeAnthropic([suggest("bug")]), env=env)
+    write_outputs(env, result, None, run_stats(ledger, result))
+    assert "cost $" in (tmp_path / "summary.md").read_text()

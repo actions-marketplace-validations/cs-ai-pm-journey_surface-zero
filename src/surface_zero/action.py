@@ -366,7 +366,33 @@ def export_record(ledger: Ledger, path: Path) -> None:
     path.write_text(json.dumps({"runs": runs}, indent=2), encoding="utf-8")
 
 
-def write_outputs(env: Mapping[str, str], result: ActionResult, record_path: Path | None) -> None:
+def run_stats(ledger: Ledger, result: ActionResult, threshold: float = 0.0) -> str:
+    """One line a maintainer can read in the job summary: what the model call cost and how sure it was.
+
+    The full record is a file in the workspace that vanishes with the job unless the workflow
+    uploads it, so the numbers people care about are also written where they will see them."""
+    if result.run_id is None:
+        return "No model call was made."
+    run_rec = next((r for r in ledger.list_runs() if r.run_id == result.run_id), None)
+    calls = ledger.llm_calls_for_run(result.run_id)
+    if not calls:
+        return "No model call was recorded."
+    parts = [
+        f"model {calls[0].model}",
+        f"{sum(c.input_tokens or 0 for c in calls)} input tokens",
+        f"{sum(c.output_tokens or 0 for c in calls)} output tokens",
+        f"cost ${sum(c.cost_usd or 0.0 for c in calls):.4f}",
+    ]
+    confidence = (run_rec.response or {}).get("confidence") if run_rec else None
+    parts.append("confidence not reported" if confidence is None else f"confidence {confidence:.2f}")
+    if threshold > 0.0:
+        parts.append(f"threshold {threshold:.2f}")
+    return "; ".join(parts) + "."
+
+
+def write_outputs(
+    env: Mapping[str, str], result: ActionResult, record_path: Path | None, stats: str | None = None
+) -> None:
     out = env.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a", encoding="utf-8") as f:
@@ -377,6 +403,8 @@ def write_outputs(env: Mapping[str, str], result: ActionResult, record_path: Pat
     if summary:
         with open(summary, "a", encoding="utf-8") as f:
             f.write(f"### Surface Zero\n\n**{result.result}**: {result.message}\n")
+            if stats:
+                f.write(f"\n{stats}\n")
 
 
 def main(env: Mapping[str, str] | None = None) -> int:
@@ -398,10 +426,11 @@ def main(env: Mapping[str, str] | None = None) -> int:
         )
         record_path = workspace / RECORD_FILENAME
         export_record(ledger, record_path)
+        stats = run_stats(ledger, result, config.confidence_threshold)
     except ConfigError as exc:
         print(f"::error title=Surface Zero setup::{exc}")
         return 1
-    write_outputs(env, result, record_path)
+    write_outputs(env, result, record_path, stats)
     if result.result == "failed":
         print(f"::warning title=Surface Zero::{result.message}")
     else:
