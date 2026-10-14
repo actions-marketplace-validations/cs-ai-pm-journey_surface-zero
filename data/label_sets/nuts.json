@@ -1,6 +1,6 @@
 {
   "repo": "thevpc/nuts",
-  "note": "PROVISIONAL, drafted 2026-10-09 from the repo's Labels tab. Only the 'app' description is the maintainer's own published text; the rest are written by Surface Zero's author, kept deliberately generic (no examples copied from the 14 issues used as the first backtest, to keep that test uncontaminated), and must be confirmed by thevpc before this runs live. Excluded on purpose: size-* (agreed with maintainer), dependencies/java/javascript (Dependabot PR labels), epic, and triage-state labels (duplicate, invalid, wontfix, question, good first issue, help wanted).",
+  "note": "PROVISIONAL, drafted 2026-10-09 from the repo's Labels tab. Only the 'app' description is the maintainer's own published text; the rest are written by Surface Zero's author, kept deliberately generic (no examples copied from the 14 issues used as the first backtest, to keep that test uncontaminated), and must be confirmed by the project's maintainer before this runs live. Excluded on purpose: size-* (agreed with maintainer), dependencies/java/javascript (Dependabot PR labels), epic, and triage-state labels (duplicate, invalid, wontfix, question, good first issue, help wanted).",
   "labels": [
     {
       "name": "bug",

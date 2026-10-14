@@ -1,0 +1,16 @@
+# False positives: 'idempotency_key': 'advise-<hash>' in recorded run output (research/blind_test, originally data/blind_test).
+# They are generated request IDs, not credentials. Reviewed 2026-10-14.
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_01.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_02.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_03.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_04.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_05.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_06.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_07.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_09.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_10.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_11.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_12.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_13.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_14.json:generic-api-key:4
+aff1979c62c28617f22cef721e9e04296aa2b364:data/blind_test/results/issue_16.json:generic-api-key:4
