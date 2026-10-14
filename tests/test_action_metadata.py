@@ -80,3 +80,9 @@ def test_action_image_does_not_float_on_latest_tools():
     dockerfile = (ROOT / "action.Dockerfile").read_text()
     assert ":latest" not in dockerfile
     assert "ghcr.io/astral-sh/uv:0.12.7" in dockerfile
+
+
+def test_action_base_image_is_pinned_by_digest():
+    """The Python base image must not change under a tenant: a tag can move, a digest cannot."""
+    from_lines = [l for l in (ROOT / "action.Dockerfile").read_text().splitlines() if l.startswith("FROM ")]
+    assert from_lines and all("@sha256:" in l for l in from_lines)

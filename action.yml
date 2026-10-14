@@ -18,7 +18,7 @@ inputs:
     required: false
     default: ''
   confidence-threshold:
-    description: 'From 0 to 1. The advisor reports how likely a maintainer would choose its label; below this value it posts nothing and records an abstention. 0 (default) always posts. Uncalibrated: see the Install Guide.'
+    description: 'From 0 to 1. The advisor reports how likely a maintainer would choose its label; below this value it posts nothing and records an abstention. 0 (default) always posts. In testing a higher value did not help enough to recommend: see the Install Guide.'
     required: false
     default: '0'
   duplicates:
