@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -28,6 +29,16 @@ from surface_zero.labels import LabelSet  # noqa: E402
 
 SEEDED = 57  # fork numbers 1..57 were seeded; 58 and up were replayed (replay 1 scored 69)
 EXPECTED = {"labelled": 440, "paired69": 69}  # frozen data facts; the script refuses to run if they change
+
+
+def code_sha() -> str | None:
+    """Commit of the code under test, so every number is tied to what produced it."""
+    try:
+        root = Path(__file__).resolve().parent.parent.parent
+        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True,
+                              check=True).stdout.strip()
+    except Exception:  # noqa: BLE001 - provenance is best effort, the run must not die for it
+        return None
 
 
 def truth_of(issue: dict) -> str | None:
@@ -90,6 +101,8 @@ def main() -> int:
         mod, fn = args.client.split(":")
         advisor = adv.Advisor(getattr(importlib.import_module(mod), fn)(), label_set)
 
+    sha = code_sha()
+    print(f"code under test: {sha}")
     new_spend, n_new = 0.0, 0
     with results.open("a") as out:
         for n in numbers:
@@ -103,6 +116,7 @@ def main() -> int:
             payload = {"title": v["title"], "body": v["body"], "number": n}
             ctx = Ctx()
             row = {"set": args.set, "run": args.run, "number": n, "truth": truth_of(issue),
+                   "code_sha": sha, "body_chars": len((issue.get("body") or "").strip()),
                    "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
             try:
                 res = advisor(payload, ctx)
