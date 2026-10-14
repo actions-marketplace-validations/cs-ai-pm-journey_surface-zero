@@ -3,7 +3,7 @@ closed-as-duplicate issue was a duplicate of. Read-only, public API.
 
 Needs a GitHub login for rate limits (about 60 requests; the anonymous cap is 60/hour
 and a first pull already used some). With the gh CLI signed in:
-    GITHUB_TOKEN=$(gh auth token) uv run python scripts/medtimer_events_pull.py "<output folder>"
+    GITHUB_TOKEN=$(gh auth token) uv run python research/scripts/medtimer_events_pull.py "<output folder>"
 Never paste the token anywhere. Output folder = the same vault folder as the first pull.
 """
 

@@ -31,7 +31,7 @@ resp = poster._client.get(
 resp.raise_for_status()
 issues = resp.json()
 
-results_dir = Path("data/blind_test/results")
+results_dir = Path("research/blind_test/results")
 mapping = {}
 unmatched_local = []
 for i in range(1, 17):
@@ -69,7 +69,7 @@ for i, title in TITLES.items():
     status = "OK" if real_number is not None else "!! NOT FOUND"
     print(f"local #{i:2d} -> github #{real_number}  [{status}]  {title[:70]}")
 
-Path("data/blind_test/issue_number_map.json").write_text(json.dumps(matches, indent=2))
+Path("research/blind_test/issue_number_map.json").write_text(json.dumps(matches, indent=2))
 missing = [i for i, n in matches.items() if n is None]
 print()
 print(f"matched {16 - len(missing)}/16" + (f", MISSING: {missing}" if missing else ", all matched"))

@@ -5,8 +5,8 @@ Offline: builds each test issue's candidate pool from issues.json, calls the
 production Advisor with one of three arms, writes one JSON line per run.
 Nothing is posted anywhere. Needs ANTHROPIC_API_KEY (the advisor's own key).
 
-    uv run python scripts/dup_eval.py FORK_DIR --arms A,C --limit 5 --max-usd 2   # pilot
-    uv run python scripts/dup_eval.py FORK_DIR --arms A,B,C --max-usd 14           # full run
+    uv run python research/scripts/dup_eval.py FORK_DIR --arms A,C --limit 5 --max-usd 2   # pilot
+    uv run python research/scripts/dup_eval.py FORK_DIR --arms A,B,C --max-usd 14           # full run
 
 Arms:
   A  production prompt, full pool                      (control)

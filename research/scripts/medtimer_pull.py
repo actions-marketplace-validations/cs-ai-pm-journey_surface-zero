@@ -4,7 +4,7 @@ ground truth exists. Read-only. No login needed (60 requests/hour); set
 GITHUB_TOKEN in your shell to raise that, but do not paste the token anywhere.
 
 Usage (run on your own machine, from the surface-zero folder):
-    uv run python scripts/medtimer_pull.py "<output folder>"
+    uv run python research/scripts/medtimer_pull.py "<output folder>"
 
 Save the output outside the code repo (the vault), since it is another
 person's issue content. The summary is what we use to write predictions.

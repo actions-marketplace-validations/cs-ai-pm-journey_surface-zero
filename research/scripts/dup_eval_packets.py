@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build blind rating packets for dup-eval-2.
 
-    python scripts/dup_eval_packets.py FORK_DIR
+    python research/scripts/dup_eval_packets.py FORK_DIR
 
 Reads dup-eval-2/results.jsonl (+ issues.json). Takes the distinct
 (test issue, flagged issue) pairs flagged by ANY arm on the 60 drawn issues,

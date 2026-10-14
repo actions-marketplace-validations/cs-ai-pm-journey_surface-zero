@@ -2,7 +2,7 @@
 """Score the MedTimer fork replay against prereg-fork-replay-1.md.
 
 Usage:
-    python scripts/medtimer_score.py LEDGER_DB FORK_DIR [--out RESULT.md]
+    python research/scripts/medtimer_score.py LEDGER_DB FORK_DIR [--out RESULT.md]
 
 LEDGER_DB  a local copy of /data/ledger.db (read only here).
 FORK_DIR   the medtimer-fork vault folder (issues.json, mapping-*.json).

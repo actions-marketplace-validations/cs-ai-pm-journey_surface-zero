@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Score dup-eval-2 per prereg-dup-eval-2.md. Usage: python scripts/dup_eval_score.py FORK_DIR [--out FILE]
+"""Score dup-eval-2 per prereg-dup-eval-2.md. Usage: python research/scripts/dup_eval_score.py FORK_DIR [--out FILE]
 
 Needs dup-eval-2/{results.jsonl,draw.json,rating-key.json,ratings-claude.csv,ratings-adam.csv}.
 Rating letters: D duplicate, R related, U unrelated, ? unrated (counts as not-D).

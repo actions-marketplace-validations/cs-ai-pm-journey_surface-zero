@@ -1,6 +1,6 @@
 """Turns a real repo's public issue into a safe test fixture on a fork.
 
-Used only by the MedTimer fork replay (scripts/medtimer_*.py). The point of
+Used only by the MedTimer fork replay (research/scripts/medtimer_*.py). The point of
 the fork is that NOTHING touches the original repo or its people. Pasting
 public issue text into another repo is not neutral by default, because GitHub
 turns certain text into side effects:

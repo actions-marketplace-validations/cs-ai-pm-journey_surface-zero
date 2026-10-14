@@ -1,13 +1,13 @@
 """Plans and performs the MedTimer fork replay. Writes ONLY to a fork you name.
 
   # 1. Plan (no network, safe): shows counts and 3 neutralized samples
-  uv run python scripts/medtimer_import.py plan <data folder>
+  uv run python research/scripts/medtimer_import.py plan <data folder>
 
   # 2. Seed (no bot yet): creates the older context issues on the fork
-  GITHUB_TOKEN=... uv run python scripts/medtimer_import.py seed <data folder> --repo ForgeAS/<fork>
+  GITHUB_TOKEN=... uv run python research/scripts/medtimer_import.py seed <data folder> --repo ForgeAS/<fork>
 
   # 3. Install the app on the fork, then replay (the bot answers each one)
-  GITHUB_TOKEN=... uv run python scripts/medtimer_import.py replay <data folder> --repo ForgeAS/<fork>
+  GITHUB_TOKEN=... uv run python research/scripts/medtimer_import.py replay <data folder> --repo ForgeAS/<fork>
 
 Copies are opened from YOUR account (the token's owner). That matters: the
 webhook skips Dependabot/Renovate authors, and the bot's own identity is not
@@ -63,7 +63,7 @@ def run(args):
     issues, events = load(args.data)
     rpath = Path(args.data) / "rename_events.json"
     if not rpath.exists() and args.cmd != "plan":
-        sys.exit("rename_events.json missing: run scripts/medtimer_titles_pull.py first (title leak guard)")
+        sys.exit("rename_events.json missing: run research/scripts/medtimer_titles_pull.py first (title leak guard)")
     renames = json.loads(rpath.read_text()) if rpath.exists() else {}
     byn = {i["number"]: i for i in issues}
     sets = select_sets(issues, events, recent=60, duplicate_pairs=DUP_PAIRS)

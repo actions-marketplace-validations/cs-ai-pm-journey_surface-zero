@@ -5,7 +5,7 @@ the issue, which would leak the answer. GitHub keeps each retitle as a `renamed`
 event; we save them. Read-only, public API. Needs a login (about 126 requests):
 
     read -rs GITHUB_TOKEN && export GITHUB_TOKEN     # then paste the token ONCE at the blank prompt
-    uv run python scripts/medtimer_titles_pull.py "<medtimer-fork folder>"
+    uv run python research/scripts/medtimer_titles_pull.py "<medtimer-fork folder>"
     unset GITHUB_TOKEN
 """
 

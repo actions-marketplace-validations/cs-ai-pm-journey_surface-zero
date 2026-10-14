@@ -3,7 +3,7 @@ GitHub, and lists its recent webhook deliveries if the App has a webhook.
 Uses the App's own credentials (.env or the .pem in this folder); prints no
 secrets. Read-only.
 
-    uv run python scripts/app_deliveries.py
+    uv run python research/scripts/app_deliveries.py
 """
 
 import glob

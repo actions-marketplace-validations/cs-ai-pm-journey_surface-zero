@@ -1,100 +1,71 @@
-# surface-zero
+# Surface Zero Label Advisor
 
-Advisory-only GitHub issue triage agent (Block 11, Gate A). It reads new issues on a
-maintainer-consented repo and posts one comment suggesting a label from the repo's own
-label set, plus a duplicate flag. Nothing else.
+A GitHub Action that reads each new issue and posts one comment suggesting which of your existing labels fits. It only suggests. It never applies a label, closes an issue, or edits anything.
 
-## Status
+<!-- RELEASE: rewrite the opening and "Why this exists" in Adam's own words before the repo goes public. -->
 
-Live and operating (Gate A, Level 2 -- recommends only, never applies its own suggestion).
-Deployed on Fly.io since 2026-09-24, authenticating as the `surface-zero-advisor` GitHub
-App, processing real webhook deliveries against `ForgeAS/everForge`. Duplicate detection
-(candidate fetching, closed-issue regression flagging) shipped 2026-09-29. Full metric
-definitions, evidence classes and current operating numbers live in the project vault's
-`metrics-definitions.md`; a public operating page is in progress (B11W3).
+## Install
 
-**Repository history note:** this repo's git history starts 2026-09-29 with a single
-initial commit, not at the project's actual start. The code was never under version
-control before that date -- everything from the Week 1-2 build (the ledger-first
-skeleton, the PAT-to-GitHub-App identity migration, batch-1 blind testing) happened
-without commit-by-commit history. That work is documented in the project vault
-(`learning-log.md`, `methodology-doc.md`, `retrospective.md`), not in `git blame` here.
-Treat this repo's history as reliable from 2026-09-29 forward, and the vault as the
-source of truth for anything earlier.
+Add `.github/workflows/surface-zero.yml`:
 
-## Setup
-
-```bash
-uv sync
-uv run pytest
+```yaml
+name: Surface Zero
+on:
+  issues:
+    types: [opened]
+permissions:
+  issues: write
+jobs:
+  advise:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: cs-ai-pm-journey/surface-zero@v1
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          dry-run: 'true'
 ```
 
-## Try the ledger path
+Store your Anthropic key as a repository secret named `ANTHROPIC_API_KEY`. Start with `dry-run: 'true'`, open a test issue, and read the job summary on the Actions tab. Remove the `dry-run` line when you are happy with what it would have said. The full walkthrough is in [docs/install-guide.md](docs/install-guide.md).
 
-```bash
-uv run surface-zero synthetic --mode success
-uv run surface-zero synthetic --mode failure
-uv run surface-zero synthetic --mode abstain
+## What leaves your repository
 
-# run the same command twice with the same --key to see duplicate detection
-uv run surface-zero synthetic --mode success --key same-key
-uv run surface-zero synthetic --mode success --key same-key
+For each new issue, the title and body go to Anthropic under your own API key, along with your label names and descriptions. Nothing is sent to me. There is no telemetry.
 
-uv run surface-zero runs
-```
+## What it costs
 
-The ledger is a SQLite file at `data/ledger.db` (gitignored).
+On small label sets I measured about $0.005 per issue in model cost (around 1,700 input tokens) and 25 to 35 seconds of runner time, most of it building the image. A larger label set costs more.
 
-## Webhook path (target-agnostic parts, Wednesday build)
+## How well it works
 
-`src/surface_zero/webhook.py` verifies a GitHub webhook's HMAC-SHA256 signature and
-classifies the event: only `issues` events with `action=opened`, from a non-bot author,
-become a `RunRequest`. Everything else that passes signature verification (pull requests,
-other issue actions, bot-authored issues) is recorded via `record_ignored_event` as its
-own terminal status, `RunStatus.IGNORED`, deliberately distinct from `ABSTAINED`:
-ignored means the event was out of scope and the advisor was never called, abstained
-means the advisor looked and declined. Ledger-first means every legitimate delivery is
-evidence, whether or not it was actionable. A malformed payload (bad JSON, missing
-headers) raises `MalformedEventError` instead, since there may not even be a usable
-idempotency key to record against.
+On a replay of 69 real issues from one open-source project, the suggested label matched the project's own labels on 59 of the 67 issues it answered (88%), against about 64% for always guessing the most common label. It abstained on 2. The ground truth is weak, because most of those labels came from the reporter's issue form, and it is one project with two labels in play. That run was before the optional confidence setting was added. <!-- RELEASE: replace with the Friday calibration numbers and link the report. -->
 
-`src/surface_zero/killswitch.py` gates the outbound comment specifically, not the model
-call. Two ways to trip it: a `SURFACE_ZERO_KILL` env var (instant, no repo write access
-needed) or a `data/kill_switch.json` file (durable, survives a restart). A kill switch
-file that fails to parse is treated as active, it fails safe.
+Results are not deterministic. The same issue was suggested as `enhancement` one day and left without a suggestion the next.
 
-`src/surface_zero/pipeline.py` wires a `CommentPoster` and a `KillSwitch` into the
-`outbound` handler `runner.run_request` now accepts. The real `GitHubCommentPoster`
-went live 2026-09-23 once ForgeAS/everForge was confirmed as the target, and switched
-2026-09-24 to authenticating as the `surface-zero-advisor` GitHub App instead of a
-personal PAT -- see `comment_poster.py`'s module docstring for why, and
-`GitHubCommentPoster.from_env` for the `SURFACE_ZERO_GITHUB_APP_*` env vars it needs
-(`SURFACE_ZERO_GITHUB_APP_ID`, `SURFACE_ZERO_GITHUB_INSTALLATION_ID`, and either
-`SURFACE_ZERO_GITHUB_PRIVATE_KEY` or `SURFACE_ZERO_GITHUB_PRIVATE_KEY_PATH`). Either
-way, it self-checks its own token's effective permission on the target repo before
-posting anything, and refuses to post if that permission is anything beyond
-Issues: Read and write.
+## Options
 
-`src/surface_zero/main.py` is the HTTP boundary. `create_app(...)` takes already-built
-dependencies (real or fake) and wires one route, `POST /webhook`. Response codes are
-deliberate: 401 for a bad signature (no ledger row, not treated as a GitHub event at
-all), 400 for a signature-valid but unparseable payload, 200 for everything else,
-including a run that finished FAILED, because GitHub's own redelivery reuses the same
-delivery id, and idempotency means that redelivery would just be detected as a
-duplicate and skipped, not actually retried. A failed run gets caught by a human during
-the Friday ops review, not by GitHub's retry behavior.
+| Input | Default | Meaning |
+|---|---|---|
+| `anthropic-api-key` | required | Your key. |
+| `labels` | every label except duplicate, invalid, wontfix | Comma-separated labels it may suggest. |
+| `confidence-threshold` | `0` | 0 to 1. Below it, nothing is posted. The model reports the number itself, and I have not shown that it matches real accuracy, so leave it at 0 unless you have tested it on your own issues. |
+| `dry-run` | `false` | Record the suggestion, post nothing. |
 
-Fully synchronous: verify, parse, run the advisor, attempt to post, respond. Agreed with
-Adam on 2026-09-22 given this bot's expected volume; revisit if it ever needs to scale.
+`duplicates` and `summaries` are reserved and fail with a clear message if set to true.
 
-Run it for real with `SURFACE_ZERO_WEBHOOK_SECRET` set (and `ANTHROPIC_API_KEY` in
-`.env`): `uv run python -m surface_zero.main`. It will accept and log webhooks today;
-it cannot yet post a real comment, `GitHubCommentPoster` is still a deliberate
-`NotImplementedError` pending a confirmed target.
+## What it does not do
 
-## Ledger rules
+It does not detect duplicates. I built that, measured it against bars I set in advance, and it did not meet them: about one in four flags was a true duplicate under strict rating by two raters (me and an AI model) who themselves disagreed on 29% of pairs. The write-up is in [research/](research/).
 
-- Row is written as `started` before the agent runs. A row stuck in `started` is an orphan.
-- `idempotency_key` is UNIQUE. Duplicate deliveries return the existing run and never re-run the agent.
-- Terminal states (`succeeded`, `abstained`, `failed`, `suppressed`) are immutable.
-- Token, cost and latency fields are nullable. NULL means not measured, not zero.
+It also reads only the new issue's title and body, not comments, code, or past issues. It runs on Linux runners only.
+
+## Hosted version
+
+This repository also contains the hosted service I used for my own testing, a GitHub App behind a webhook. That is a separate thing and not what the Action runs. It still includes duplicate flagging. See [docs/hosted-service.md](docs/hosted-service.md).
+
+## Research
+
+Evaluation scripts, pre-registrations and outcomes are under [research/](research/).
+
+## License
+
+MIT.

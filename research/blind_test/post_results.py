@@ -28,8 +28,8 @@ poster = GitHubCommentPoster(provider)
 kill_switch = KillSwitch()  # data/kill_switch.json, relative to cwd -- confirmed absent/inactive
 outbound = build_outbound_handler(poster, kill_switch)
 
-mapping = json.loads(Path("data/blind_test/issue_number_map.json").read_text())
-results_dir = Path("data/blind_test/results")
+mapping = json.loads(Path("research/blind_test/issue_number_map.json").read_text())
+results_dir = Path("research/blind_test/results")
 
 posted, skipped, failed = [], [], []
 for i in range(1, 17):

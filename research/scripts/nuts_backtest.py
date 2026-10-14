@@ -1,6 +1,6 @@
 """Backtest 1 for thevpc/nuts: runs the advisor on 14 closed issues' titles
 against the maintainer's real labels. Titles only (no bodies). Uses a throwaway
-ledger so nothing touches data/ledger.db. Run: uv run python scripts/nuts_backtest.py
+ledger so nothing touches data/ledger.db. Run: uv run python research/scripts/nuts_backtest.py
 Predictions were written first: see the vault's nuts-backtest-1-predictions.md.
 """
 
