@@ -37,7 +37,7 @@ On small label sets I measured about $0.005 per issue in model cost (around 1,70
 
 ## How well it works
 
-On a replay of 69 real issues from one open-source project, the suggested label matched the project's own labels on 59 of the 67 issues it answered (88%), against about 64% for always guessing the most common label. It abstained on 2. The ground truth is weak, because most of those labels came from the reporter's issue form, and it is one project with two labels in play. That run was before the optional confidence setting was added. <!-- RELEASE: replace with the Friday calibration numbers and link the report. -->
+On 440 closed issues from one open-source app (MedTimer, bug versus enhancement), the suggested label agreed with the maintainers' own about 95 to 98% of the time when it answered, against 58% for always guessing the most common label. It declined to answer on under 1%. The ground truth is the maintainers' current labels, it is one project, and it is a two-label choice, so treat it as a smoke test, not a guarantee. Issues with little or no text are more likely to get no suggestion. Method, both runs and limits: [Calibration Report](docs/calibration-report.md).
 
 Results are not deterministic. The same issue was suggested as `enhancement` one day and left without a suggestion the next.
 
@@ -47,7 +47,7 @@ Results are not deterministic. The same issue was suggested as `enhancement` one
 |---|---|---|
 | `anthropic-api-key` | required | Your key. |
 | `labels` | every label except duplicate, invalid, wontfix | Comma-separated labels it may suggest. |
-| `confidence-threshold` | `0` | 0 to 1. Below it, nothing is posted. The model reports the number itself, and I have not shown that it matches real accuracy, so leave it at 0 unless you have tested it on your own issues. |
+| `confidence-threshold` | `0` | 0 to 1. Below it, nothing is posted. In testing it did not help enough to recommend (about 1.6 points of agreement for dropping a quarter of the answers), so leave it at 0 unless you have tested it on your own issues. |
 | `dry-run` | `false` | Record the suggestion, post nothing. |
 
 `duplicates` and `summaries` are reserved and fail with a clear message if set to true.

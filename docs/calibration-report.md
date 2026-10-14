@@ -1,0 +1,38 @@
+# Calibration Report: Surface Zero v1 label advisor
+
+Date: 2026-10-14. Code under test: commit 0a12710c3ad8456c7b5618bf15fca5043618b8cd (222 tests passing). Pass and fail criteria were written down before the data was collected. Two things changed afterwards and are disclosed below: a bug fix after the first run (and a full re-run), and clarifications to how some counts were defined.
+
+## What was measured
+Background: an earlier test ("replay 1") ran an older version of the advisor on 69 real issues from the same project and matched the maintainers' labels on 59 of the 67 it answered (88%). The criteria below compare against that figure.
+
+The advisor, at confidence threshold 0, on 440 closed MedTimer issues that carry exactly one of bug or enhancement (255 enhancement, 185 bug), plus the 69 replay-1 issues twice (noise floor and paired comparison), plus 14 Nuts issues, titles only. "Correct" means the advisor's label equals the maintainer's current label on the original repository. That is weak ground truth: labels can be changed after the fact, and titles and bodies may have been edited.
+
+## Headline (MedTimer, 440 issues, fixed commit)
+- Accuracy among answered: 97.5% (426 of 437; 95% interval 96 to 99%). Always-enhancement baseline: 58%.
+- Abstained: 3 (0.7%). Failed runs: 0. Accuracy counting abstentions as misses: 96.8% (426 of 440).
+- Excluding the 15 type-tagged titles: 97.4%.
+- Issues scored on filing-time titles (121): 95.0%. Issues scored on current titles (316): 98.4%. This split was looked at after seeing the data. The filing-time figure is the one to quote.
+- By body length (descriptive only): 2 empty-body issues, too few to read; 52 short (96.0%); 386 longer (97.7%).
+
+## Verdicts against the frozen criteria
+1. Regression, within 3 points of the old 88%: not met as written, because the result is nearly 10 points higher. It is not a regression. The old figure came from 67 answered issues (uncertainty roughly 78 to 94%) with candidate issues in the prompt, so the comparison is soft in both directions. The honest summary: no sign of a drop, and likely better than the old estimate, with the title-edit caveat above.
+2. Usefulness of a threshold: not met. At 0.90 the advisor keeps 82% of issues at 99.2% accuracy; at 0.95, 74% at 99.1%. That is a lift of about 1.6 points over 97.5%, short of the required 3. The Install Guide says the threshold is not shown to help and recommends 0. A ceiling effect is the likely reason; on a harder repository the threshold may matter more, and this data cannot say.
+3. Reporting: MedTimer and Nuts are in separate tables below and never pooled.
+
+## Paired comparison with replay 1 (69 issues)
+- Same answered-or-abstained status and same label as replay 1: 66 of 69 (95.7%) in both new runs. Frozen prediction was at least 90%: held.
+- Run 1 and run 2 (same code) disagree on 0 of 69 (noise floor 0). Each differs from replay 1 on 3. Because the prompt schema, model version and candidate context all changed since replay 1, these 3 differences cannot be attributed to any one cause at n = 69.
+- Accuracy against the weak truth on the 66 labelled issues: 61 of 66 (92.4%) for both runs; replay 1 was 59 of 66 (89%) on the same denominator.
+
+## First run versus fixed run
+The first run (commit 190551b) had 5 of 440 calls fail: with no candidate issues supplied, the model returned a duplicate_of pointing at a neighbouring issue number, and the validator correctly refused it. The fix removes duplicate fields and guidance when there are no candidates and ignores a stray value. The first run's accuracy was 97.7% (422 of 432). The fix changed the label on 3 issues that were answered in both runs (of roughly 435) (793, 1057, 1469), all enhancement to bug, so the prompt change moved 0.7% of answers. The 5 previously failed issues now all answer correctly. Both runs are kept in the vault.
+
+## Nuts (14 cases, titles only, anecdote, separate from MedTimer)
+9 of 14 exact (old backtest 10 of 14); 3 of 8 excluding the six app rows (old 4 of 8). Four abstentions (#320, #312, #277, #116). When it answered, it was right on 9 of 10. #168 (enhancement) still lands on api-feature. All 14 had no body text.
+
+## Limits to state plainly
+- One repository for the headline number; a bug/enhancement choice only, which is the easiest labelling task a repo has.
+- Ground truth is the maintainer's current label, not a blind second review.
+- Zero run-to-run disagreement within a day, but the same input gave different outcomes on different days in the tenant tests (2026-10-13 and 2026-10-14). Do not describe the model as deterministic.
+- Empty and very short bodies: the 440 set has almost none (2 empty). On titles-only Nuts runs, 4 of 14 abstained, against 0.7% on MedTimer. That is an anecdote pointing the same way as the tenant observation: expect more abstentions on issues with little text. Whether it is worth a dedicated test is a post-release question.
+- Cost: about $0.004 per call; the whole fixed run (578 calls) cost $2.31.
