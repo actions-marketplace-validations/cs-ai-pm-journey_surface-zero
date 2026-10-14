@@ -114,7 +114,27 @@ class AbstainInput(BaseModel):
     duplicate_rationale: str | None = None
 
 
-def _tools(label_set: LabelSet) -> list[dict[str, Any]]:
+_DUPLICATE_FIELDS = ("duplicate_of", "duplicate_rationale")
+_DUPLICATE_PARAGRAPH_STARTS = ("Independently of which", "Some candidate issues are marked")
+
+
+def _has_candidates(payload: dict[str, Any]) -> bool:
+    return bool(payload.get("candidates"))
+
+
+def _tools(label_set: LabelSet, with_duplicates: bool = True) -> list[dict[str, Any]]:
+    """Tool schemas. Without candidate issues there is nothing to be a duplicate of, so the
+    duplicate fields are not offered at all: offering them led the model to invent a
+    neighbouring issue number in about 1 of 100 calibration calls."""
+    tools = _all_tools(label_set)
+    if not with_duplicates:
+        for tool in tools:
+            for field in _DUPLICATE_FIELDS:
+                tool["input_schema"]["properties"].pop(field, None)
+    return tools
+
+
+def _all_tools(label_set: LabelSet) -> list[dict[str, Any]]:
     return [
         {
             "name": "suggest_label",
@@ -183,9 +203,14 @@ def _tools(label_set: LabelSet) -> list[dict[str, Any]]:
     ]
 
 
-def _build_prompt(label_set: LabelSet) -> str:
+def _build_prompt(label_set: LabelSet, with_duplicates: bool = True) -> str:
     label_lines = "\n".join(f"- {l.name}: {l.description}" for l in label_set.labels)
-    return SYSTEM_PROMPT.format(repo=label_set.repo, label_lines=label_lines)
+    template = SYSTEM_PROMPT
+    if not with_duplicates:
+        template = "\n\n".join(
+            para for para in template.split("\n\n") if not para.startswith(_DUPLICATE_PARAGRAPH_STARTS)
+        )
+    return template.format(repo=label_set.repo, label_lines=label_lines)
 
 
 def _truncate(text: str, limit: int = 300) -> str:
@@ -269,12 +294,13 @@ class Advisor:
         import time
 
         started = time.perf_counter()
+        with_duplicates = _has_candidates(payload)
         try:
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=400,
-                system=_build_prompt(self.label_set),
-                tools=_tools(self.label_set),
+                system=_build_prompt(self.label_set, with_duplicates),
+                tools=_tools(self.label_set, with_duplicates),
                 tool_choice={"type": "any"},
                 messages=[{"role": "user", "content": _issue_text(payload)}],
             )
@@ -316,6 +342,8 @@ class Advisor:
 
         if tool_use.name == "abstain":
             parsed = AbstainInput.model_validate(tool_use.input)
+            if not with_duplicates:
+                parsed.duplicate_of = None  # nothing was offered to match; a stray value is ignored
             _validate_duplicate_reference(parsed.duplicate_of, payload)
             response: dict[str, Any] = {"reason": parsed.reason}
             if parsed.duplicate_of is not None:
@@ -328,6 +356,8 @@ class Advisor:
 
         if tool_use.name == "suggest_label":
             parsed = SuggestLabelInput.model_validate(tool_use.input)
+            if not with_duplicates:
+                parsed.duplicate_of = None  # nothing was offered to match; a stray value is ignored
             if parsed.label not in self.label_set:
                 # Defense in depth: the schema enum should prevent this, but a schema
                 # hint is not a guarantee, and a bad label must never reach a comment.

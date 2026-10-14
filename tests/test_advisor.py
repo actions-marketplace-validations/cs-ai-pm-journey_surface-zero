@@ -317,3 +317,46 @@ def test_no_candidates_means_no_duplicate_section_in_the_prompt(label_set, ledge
     run_request(issue_request(), Advisor(fake, label_set), ledger)
     user_message = fake.messages.calls[0]["messages"][0]["content"]
     assert "Other issues currently open" not in user_message
+
+
+def _only_call(fake):
+    return fake.messages.calls[0]
+
+
+def test_without_candidates_duplicates_are_not_offered_to_the_model(label_set, ledger):
+    fake = FakeAnthropic(
+        responses=[FakeResponse(content=[ToolUseBlock(name="abstain", input={"reason": "n/a"})])]
+    )
+    run_request(issue_request(), Advisor(fake, label_set), ledger)
+    call = _only_call(fake)
+    # a repo may legitimately have a label named "duplicate"; the guidance paragraphs are what must go
+    assert "duplicate_of" not in call["system"] and "likely duplicate" not in call["system"]
+    for tool in call["tools"]:
+        props = tool["input_schema"]["properties"]
+        assert "duplicate_of" not in props and "duplicate_rationale" not in props
+    assert all(l.name in call["system"] for l in label_set.labels)
+
+
+def test_with_candidates_duplicates_are_still_offered(label_set, ledger):
+    fake = FakeAnthropic(
+        responses=[FakeResponse(content=[ToolUseBlock(name="abstain", input={"reason": "n/a"})])]
+    )
+    candidates = [{"number": 3, "title": "Something else", "body": "..."}]
+    run_request(issue_request(candidates=candidates), Advisor(fake, label_set), ledger)
+    call = _only_call(fake)
+    assert "duplicate_of" in call["system"] and "likely duplicate" in call["system"]
+    for tool in call["tools"]:
+        assert "duplicate_of" in tool["input_schema"]["properties"]
+
+
+@pytest.mark.parametrize("tool", ["suggest_label", "abstain"])
+def test_a_stray_duplicate_of_without_candidates_is_ignored_not_a_failure(label_set, ledger, tool):
+    """Calibration (2026-10-14): the model sometimes returned a neighbouring issue number
+    when no candidates existed, which failed the run. Nothing was offered to match, so the
+    value is dropped and the label or abstention stands."""
+    payload = {"label": "bug", "rationale": "crash", "confidence": 0.9} if tool == "suggest_label" else {"reason": "n/a"}
+    payload.update({"duplicate_of": 432, "duplicate_rationale": "invented"})
+    fake = FakeAnthropic(responses=[FakeResponse(content=[ToolUseBlock(name=tool, input=payload)])])
+    outcome = run_request(issue_request(), Advisor(fake, label_set), ledger)
+    assert outcome.run.status != RunStatus.FAILED
+    assert "duplicate_of" not in outcome.run.response
