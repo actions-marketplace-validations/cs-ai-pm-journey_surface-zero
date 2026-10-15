@@ -2,7 +2,17 @@
 
 A GitHub Action that reads each new issue and posts one comment suggesting which of your existing labels fits. It only suggests. It never applies a label, closes an issue, or edits anything.
 
-<!-- RELEASE: rewrite the opening and "Why this exists" in Adam's own words before the repo goes public. -->
+## Why this exists
+
+Labeling issues is small work, but it comes back with every new issue. I wanted to find out how much of that first pass a model could handle without being handed the keys to the repository.
+
+Surface Zero reads a new issue, looks at the labels your project already uses, and suggests one. That's all it does. It reads your labels and the issue, and the only thing it ever writes is a single comment. It can't apply the label, close the issue, or change anything else, and the code is small enough to read yourself. If the issue is unclear, it can say nothing instead of forcing an answer.
+
+I kept the scope narrow on purpose. A bot that closes issues or makes a long list of decisions just because it technically can is a bot you have to supervise. This one is meant to save a little triage time while the person responsible for the project stays in charge.
+
+I also wanted something another maintainer could install without me. It runs with your own Anthropic API key, so your issue text goes to Anthropic and nowhere to me, and there's no service of mine involved. You can run it in dry-run mode first, and it posts nothing until you turn that off.
+
+I tested it before releasing it. On 440 closed issues from one open-source app, its label agreed with the maintainers' about 95 to 98% of the time when it answered, and it declined to answer on under 1%. It won't always be right, and the same issue can get a different outcome on a different day. I also built duplicate detection and left it out because it wasn't good enough, and I tested a confidence threshold that didn't help, so the default turns it off. The [Calibration Report](docs/calibration-report.md) has the method and the limits.
 
 ## Install
 
