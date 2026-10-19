@@ -208,6 +208,7 @@ def test_happy_path_posts_one_marked_comment_with_an_honest_footer(tmp_path):
     assert body.rstrip().endswith(MARKER)
     assert "stop bot" not in body
     assert "disable or delete the Surface Zero workflow" in body
+    assert "(https://github.com/cs-ai-pm-journey/surface-zero)" in body  # a reader can find out what this is
 
 
 def test_the_model_is_only_offered_the_default_label_vocabulary(tmp_path):
