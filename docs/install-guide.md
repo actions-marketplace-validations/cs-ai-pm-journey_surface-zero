@@ -34,7 +34,7 @@ jobs:
 `issues: write` is the only permission needed. Add `contents: read` only if you also use `actions/checkout` in the same job.
 
 ## First run: dry run
-Leave `dry-run: 'true'`, open a test issue, and read the job summary on the Actions tab. It reports what would have been suggested, and the cost. Nothing is posted. When you are satisfied, delete the `dry-run` line.
+Leave `dry-run: 'true'`, open a test issue, and read the job summary on the Actions tab. A good first test is a clear one, for example the title `App crashes when I tap Save with an empty name` with a few lines describing the steps and what happens. Then try a vague one (`It doesn't work properly`) to see it decline to guess. It reports what would have been suggested, and the cost. Nothing is posted. When you are satisfied, delete the `dry-run` line.
 
 ## Inputs
 | Input | Default | Meaning |

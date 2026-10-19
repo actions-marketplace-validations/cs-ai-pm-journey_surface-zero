@@ -29,3 +29,7 @@ data/*.db-shm
 
 # Pulled metrics snapshot -- generated/stale, not source
 /ledger.ndjson
+
+# Outreach candidate lists (third-party data; never commit)
+candidates.json
+candidates.md
