@@ -45,7 +45,7 @@ from surface_zero.runner import RunRequest, run_request
 GITHUB_API = "https://api.github.com"
 MARKER = "<!-- surface-zero-action:v1 -->"
 FOOTER = (
-    "_Posted by the Surface Zero Action. It can't apply this label, only suggest it. "
+    "_Posted by the [Surface Zero Action](https://github.com/cs-ai-pm-journey/surface-zero). It can't apply this label, only suggest it. "
     "To turn it off, disable or delete the Surface Zero workflow in this repository._"
 )
 # Labels that record a maintainer's closing decision. An advisory bot should not
