@@ -8,6 +8,16 @@ The issue title and body are sent to Anthropic, under your own API key, for each
 
 ## What you need
 - A repository with at least two labels (GitHub's defaults qualify).
+
+If your repository has no type labels yet, create two with the GitHub CLI (you can also do it on the Labels page):
+
+```bash
+gh label create bug --description "Something isn't working" --repo OWNER/REPO
+gh label create enhancement --description "New feature or request" --repo OWNER/REPO
+```
+
+Surface Zero only suggests labels that already exist. It never creates one.
+
 - An Anthropic API key, stored as a repository secret named `ANTHROPIC_API_KEY`.
 - Linux runners (`ubuntu-24.04` recommended). Windows and macOS runners cannot run Docker actions.
 
