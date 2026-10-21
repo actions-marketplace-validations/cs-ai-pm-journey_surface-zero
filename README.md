@@ -10,7 +10,7 @@ Surface Zero reads a new issue, looks at the labels your project already uses, a
 
 I kept the scope narrow on purpose. A bot that closes issues or makes a long list of decisions just because it technically can is a bot you have to supervise. This one is meant to save a little triage time while the person responsible for the project stays in charge.
 
-I also wanted something another maintainer could install without me. It runs with your own Anthropic API key, so your issue text goes to Anthropic and nowhere to me, and there's no service of mine involved. You can run it in dry-run mode first, and it posts nothing until you turn that off.
+I also wanted something another maintainer could install without me. It runs with your own Anthropic API key, so your issue text goes to Anthropic and nowhere to me, and there's no service of mine involved. It starts in dry-run mode: it posts nothing until you turn that off.
 
 I tested it before releasing it. On 440 closed issues from one open-source app, its label agreed with the maintainers' about 95 to 98% of the time when it answered, and it declined to answer on under 1%. It won't always be right, and the same issue can get a different outcome on a different day. I also built duplicate detection and left it out because it wasn't good enough, and I tested a confidence threshold that didn't help, so the default turns it off. The [Calibration Report](docs/calibration-report.md) has the method and the limits.
 
@@ -35,7 +35,7 @@ jobs:
           dry-run: 'true'
 ```
 
-Store your Anthropic key as a repository secret named `ANTHROPIC_API_KEY`. Start with `dry-run: 'true'`, open a test issue, and read the job summary on the Actions tab. Remove the `dry-run` line when you are happy with what it would have said. The full walkthrough is in [docs/install-guide.md](docs/install-guide.md).
+Store your Anthropic key as a repository secret named `ANTHROPIC_API_KEY`. It starts in dry-run mode (`dry-run: 'true'` is the default, shown above for clarity): open a test issue and read the job summary on the Actions tab. When you are happy with what it would have said, change it to `dry-run: 'false'` to post comments. The full walkthrough is in [docs/install-guide.md](docs/install-guide.md).
 
 ## What leaves your repository
 
@@ -58,7 +58,7 @@ Results are not deterministic. The same issue was suggested as `enhancement` one
 | `anthropic-api-key` | required | Your key. |
 | `labels` | every label except duplicate, invalid, wontfix | Comma-separated labels it may suggest. |
 | `confidence-threshold` | `0` | 0 to 1. Below it, nothing is posted. In testing it did not help enough to recommend (about 1.6 points of agreement for dropping a quarter of the answers), so leave it at 0 unless you have tested it on your own issues. |
-| `dry-run` | `false` | Record the suggestion, post nothing. |
+| `dry-run` | `true` | Record the suggestion, post nothing. Set to `'false'` to post comments. |
 
 `duplicates` and `summaries` are reserved and fail with a clear message if set to true.
 

@@ -140,7 +140,7 @@ def load_config(env: Mapping[str, str]) -> ActionConfig:
 
     duplicates = _parse_bool("duplicates", _input(env, "duplicates"), False)
     summaries = _parse_bool("summaries", _input(env, "summaries"), False)
-    dry_run = _parse_bool("dry-run", _input(env, "dry-run"), False)
+    dry_run = _parse_bool("dry-run", _input(env, "dry-run"), True)
 
     # Accepted in the interface now, enforced as the features land. Until then
     # asking for them fails loudly: an input that is silently ignored would be
@@ -343,7 +343,8 @@ def run(
     label = response.get("suggested_label")
     if run_rec.outbound_action == OutboundAction.SHADOW_RECORDED:
         return ActionResult(
-            "dry-run", f"Dry run: would have suggested '{label}'. Nothing was posted.", label=label, run_id=run_rec.run_id
+            "dry-run", f"Dry run: would have suggested '{label}'. Nothing was posted. "
+            "To post suggestions for real, set `dry-run: 'false'` under `with:` in your workflow.", label=label, run_id=run_rec.run_id
         )
     return ActionResult(
         "suggested",

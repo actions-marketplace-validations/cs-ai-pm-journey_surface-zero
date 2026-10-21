@@ -19,7 +19,7 @@ EXPECTED_INPUTS = {
     "confidence-threshold": {"required": False, "default": "0"},
     "duplicates": {"required": False, "default": "false"},
     "summaries": {"required": False, "default": "false"},
-    "dry-run": {"required": False, "default": "false"},
+    "dry-run": {"required": False, "default": "true"},
 }
 EXPECTED_OUTPUTS = {"result", "label", "run-record"}
 

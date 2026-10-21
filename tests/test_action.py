@@ -53,6 +53,7 @@ def base_env(tmp_path, **overrides):
         "GITHUB_WORKSPACE": str(tmp_path),
         "GITHUB_OUTPUT": str(tmp_path / "out.txt"),
         "GITHUB_STEP_SUMMARY": str(tmp_path / "summary.md"),
+        "INPUT_DRY-RUN": "false",  # the product default is true; most tests exercise the live path
     }
     env.update(overrides)
     return env
@@ -69,10 +70,12 @@ def test_missing_api_key_tells_the_maintainer_what_to_do(tmp_path):
 
 
 def test_defaults_are_the_minimum_a_stranger_provides(tmp_path):
-    cfg = load_config(base_env(tmp_path))
+    env = base_env(tmp_path)
+    del env["INPUT_DRY-RUN"]  # a stranger who sets nothing gets dry run
+    cfg = load_config(env)
     assert cfg.labels == ()
     assert cfg.confidence_threshold == 0.0
-    assert cfg.duplicates is False and cfg.summaries is False and cfg.dry_run is False
+    assert cfg.duplicates is False and cfg.summaries is False and cfg.dry_run is True
 
 
 @pytest.mark.parametrize("raw", ["yes", "1", "TRUE ish"])
@@ -224,6 +227,7 @@ def test_dry_run_records_the_suggestion_but_posts_nothing(tmp_path):
     env = base_env(tmp_path, **{"INPUT_DRY-RUN": "true"})
     result, ledger = go(tmp_path, rec, model, env=env)
     assert result.result == "dry-run" and result.label == "enhancement"
+    assert "dry-run: 'false'" in result.message  # tells the maintainer how to go live
     assert rec.posts == []
     assert ledger.list_runs()[0].outbound_action.value == "shadow_recorded"
 

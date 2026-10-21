@@ -1,7 +1,7 @@
 # Surface Zero Label Advisor: Install Guide
 
 ## What it does
-When someone opens an issue in your repository, Surface Zero reads the title and body and posts one comment suggesting one of your existing labels. It never applies a label, closes, or edits anything. If no label clearly fits, it stays silent.
+When someone opens an issue in your repository, Surface Zero reads the title and body and posts one comment suggesting one of your existing labels (once you turn dry run off; until then it only reports to the job summary). It never applies a label, closes, or edits anything. If no label clearly fits, it stays silent.
 
 ## What leaves your repository
 The issue title and body are sent to Anthropic, under your own API key, for each new issue. Your repository's label names and descriptions are sent with them. Nothing is sent to the author of this Action. There is no telemetry.
@@ -34,7 +34,7 @@ jobs:
 `issues: write` is the only permission needed. Add `contents: read` only if you also use `actions/checkout` in the same job.
 
 ## First run: dry run
-Leave `dry-run: 'true'`, open a test issue, and read the job summary on the Actions tab. A good first test is a clear one, for example the title `App crashes when I tap Save with an empty name` with a few lines describing the steps and what happens. Then try a vague one (`It doesn't work properly`) to see it decline to guess. It reports what would have been suggested, and the cost. Nothing is posted. When you are satisfied, delete the `dry-run` line.
+Dry run is the default and is written out above so you can see it. Leave `dry-run: 'true'`, open a test issue, and read the job summary on the Actions tab. A good first test is a clear one, for example the title `App crashes when I tap Save with an empty name` with a few lines describing the steps and what happens. Then try a vague one (`It doesn't work properly`) to see it decline to guess. It reports what would have been suggested, and the cost. Nothing is posted. When you are satisfied, change it to `dry-run: 'false'` to start posting comments.
 
 ## Inputs
 | Input | Default | Meaning |
@@ -42,7 +42,7 @@ Leave `dry-run: 'true'`, open a test issue, and read the job summary on the Acti
 | anthropic-api-key | required | Your key. |
 | labels | all repo labels except duplicate, invalid, wontfix | Comma-separated labels it may suggest. |
 | confidence-threshold | 0 | 0 to 1. Below it, nothing is posted. See below. |
-| dry-run | false | Record the suggestion, post nothing. |
+| dry-run | true | Record the suggestion, post nothing. Set to `'false'` to post comments. |
 | github-token | the workflow token | Leave at the default. |
 
 `duplicates` and `summaries` exist but are not available in this version and fail with a clear message if set to true. Duplicate detection was built and measured and did not meet its bar (about one in four flags was a true duplicate by strict rating, and two independent raters disagreed on 29% of pairs), so it is deliberately not shipped.
@@ -51,7 +51,7 @@ Leave `dry-run: 'true'`, open a test issue, and read the job summary on the Acti
 The model reports how likely a maintainer would choose its label, and setting a threshold makes it stay silent below that number. In testing on 440 closed issues from one open-source app, a threshold did not help enough to recommend: at 0.90 it kept 82% of issues and agreement with the maintainers' labels rose from 97.5% to 99.2%, and at 0.95 it kept 74% at 99.1%, a gain of about 1.6 points, short of the 3 points I required in advance. The recommendation is to leave it at 0, the default. If you try a higher value, test it on your own closed issues first; the number is the model's own estimate, and it was tested on one project only.
 
 ## What a suggestion looks like
-One comment on the new issue naming the suggested label and a one-sentence reason, ending with: "Posted by the Surface Zero Action. It can't apply this label, only suggest it. To turn it off, disable or delete the Surface Zero workflow in this repository." It comments once per issue.
+With `dry-run: 'false'`, one comment on the new issue naming the suggested label and a one-sentence reason, ending with: "Posted by the Surface Zero Action. It can't apply this label, only suggest it. To turn it off, disable or delete the Surface Zero workflow in this repository." It comments once per issue.
 
 ## If something goes wrong
 If the model call fails (a bad key, a rate limit, an outage), the job is marked failed, nothing is posted, and the job summary says why. Re-running the job on the same issue is safe. If the model declines to suggest a label, the job succeeds, nothing is posted, and the summary says the model chose to abstain.
