@@ -33,3 +33,5 @@ data/*.db-shm
 # Outreach candidate lists (third-party data; never commit)
 candidates.json
 candidates.md
+
+ext-replication-results/

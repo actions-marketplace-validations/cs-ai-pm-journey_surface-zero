@@ -12,7 +12,7 @@ I kept the scope narrow on purpose. A bot that closes issues or makes a long lis
 
 I also wanted something another maintainer could install without me. It runs with your own Anthropic API key, so your issue text goes to Anthropic and nowhere to me, and there's no service of mine involved. It starts in dry-run mode: it posts nothing until you turn that off.
 
-I tested it before releasing it. On 440 closed issues from one open-source app, its label agreed with the maintainers' about 95 to 98% of the time when it answered, and it declined to answer on under 1%. It won't always be right, and the same issue can get a different outcome on a different day. I also built duplicate detection and left it out because it wasn't good enough, and I tested a confidence threshold that didn't help, so the default turns it off. The [Calibration Report](docs/calibration-report.md) has the method and the limits.
+I tested it before releasing it. On 440 closed issues from one open-source app, its label agreed with the maintainers' about 95 to 98% of the time when it answered, and it declined to answer on under 1%. Then I ran the same test, with the bar written down first, on three other projects, and it agreed 72 to 93% of the time. Almost every disagreement was the model calling something a bug that the maintainers had called an enhancement. It won't always be right, and the same issue can get a different outcome on a different day. I also built duplicate detection and left it out because it wasn't good enough. The confidence threshold helped on some projects and barely at all on others, so it is off by default and you can try it on your own issues. The [Calibration Report](docs/calibration-report.md) has the method and the limits.
 
 ## Install
 
@@ -47,7 +47,7 @@ On small label sets I measured about $0.005 per issue in model cost (around 1,70
 
 ## How well it works
 
-On 440 closed issues from one open-source app (MedTimer, bug versus enhancement), the suggested label agreed with the maintainers' own about 95 to 98% of the time when it answered, against 58% for always guessing the most common label. It declined to answer on under 1%. The ground truth is the maintainers' current labels, it is one project, and it is a two-label choice, so treat it as a smoke test, not a guarantee. Issues with little or no text are more likely to get no suggestion. Method, both runs and limits: [Calibration Report](docs/calibration-report.md).
+On 440 closed issues from one open-source app (MedTimer, bug versus enhancement), the suggested label agreed with the maintainers' own about 95 to 98% of the time when it answered, against 58% for always guessing the most common label. On 319 issues from three other projects, tested against criteria I wrote down first, it agreed 83% of the time overall: 93% on one project, 79% on another, and 72% on a third, which is lower than always guessing that project's most common label (76%). Nearly every disagreement was the model calling an issue a bug that the maintainers had called an enhancement, so the figure measures how closely your use of the labels matches the model's, not only how good the model is. It declined to answer on about 2% of issues. The ground truth is the maintainers' current labels, and it is a two-label choice, so treat it as a smoke test, not a guarantee. Issues with little or no text are more likely to get no suggestion. Method, all runs and limits: [Calibration Report](docs/calibration-report.md).
 
 Results are not deterministic. The same issue was suggested as `enhancement` one day and left without a suggestion the next.
 
@@ -57,7 +57,7 @@ Results are not deterministic. The same issue was suggested as `enhancement` one
 |---|---|---|
 | `anthropic-api-key` | required | Your key. |
 | `labels` | every label except duplicate, invalid, wontfix | Comma-separated labels it may suggest. |
-| `confidence-threshold` | `0` | 0 to 1. Below it, nothing is posted. In testing it did not help enough to recommend (about 1.6 points of agreement for dropping a quarter of the answers), so leave it at 0 unless you have tested it on your own issues. |
+| `confidence-threshold` | `0` | 0 to 1. Below it, nothing is posted. Its value depends on the project: on one it added about 1.6 points of agreement, on three others a setting of 0.90 kept about half of the answers and added 5 to 22 points depending on the project. Try it in a dry run and read the confidence in the job summary before setting one. |
 | `dry-run` | `true` | Record the suggestion, post nothing. Set to `'false'` to post comments. |
 
 `duplicates` and `summaries` are reserved and fail with a clear message if set to true.

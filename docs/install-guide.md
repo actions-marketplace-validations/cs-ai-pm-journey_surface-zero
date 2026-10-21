@@ -58,7 +58,14 @@ Dry run is the default and is written out above so you can see it. Leave `dry-ru
 `duplicates` and `summaries` exist but are not available in this version and fail with a clear message if set to true. Duplicate detection was built and measured and did not meet its bar (about one in four flags was a true duplicate by strict rating, and two independent raters disagreed on 29% of pairs), so it is deliberately not shipped.
 
 ## Confidence threshold (read before using)
-The model reports how likely a maintainer would choose its label, and setting a threshold makes it stay silent below that number. In testing on 440 closed issues from one open-source app, a threshold did not help enough to recommend: at 0.90 it kept 82% of issues and agreement with the maintainers' labels rose from 97.5% to 99.2%, and at 0.95 it kept 74% at 99.1%, a gain of about 1.6 points, short of the 3 points I required in advance. The recommendation is to leave it at 0, the default. If you try a higher value, test it on your own closed issues first; the number is the model's own estimate, and it was tested on one project only.
+The model reports how likely a maintainer would choose its label, and setting a threshold makes it stay silent below that number. Whether that helps depends on the project, so the default is 0 (always post).
+
+On 440 closed issues from one project, 0.90 kept 82% of answers and raised agreement with the maintainers' labels from 97.5% to 99.2%, about 1.6 points, short of the 3 points I required in advance. On three other projects, 0.90 kept 53% of answers and raised agreement from 83% to 93%. By project the gain ranged from about 5 to 22 points and the share kept from 32% to 68%. On those three projects the number also ran a little high in the middle of the range: answers stated at 0.80 to 0.90 agreed with the maintainers about 78% of the time. Treat the confidence as a ranking, not a probability.
+
+Because it varies by project, test it on yours. Run in dry-run mode, read the confidence in the job summary for a number of issues, and only then set a value. A higher threshold means more issues with no suggestion, and you label those by hand.
+
+## Make your labels easy to read
+The model reads each label's name and description. In testing, nearly all disagreements came from projects that use "enhancement" more broadly than GitHub's stock description ("New feature or request"), so the model called as bugs issues the maintainers had labelled enhancements. If your labels mean something specific, edit their descriptions on GitHub to say it in one sentence, for example: "bug: a defect in something we already support", "enhancement: anything new, including support for something we don't have yet". I have not yet tested whether this closes the gap.
 
 ## What a suggestion looks like
 With `dry-run: 'false'`, one comment on the new issue naming the suggested label and a one-sentence reason, ending with: "Posted by the Surface Zero Action. It can't apply this label, only suggest it. To turn it off, disable or delete the Surface Zero workflow in this repository." It comments once per issue.
@@ -90,7 +97,7 @@ Disable or delete the workflow. The comment footer says the same.
 - Linux runners only.
 - Results are not identical every time: the same issue has produced a suggestion on one day and no suggestion on another.
 - It reads only the new issue's title and body, not comments, code, or past issues.
-- On 440 closed issues from one open-source app (MedTimer, bug versus enhancement), the suggested label agreed with the maintainers' about 95 to 98% of the time when it answered, against 58% for always guessing the most common label, and it declined to answer on under 1%. Ground truth is the maintainers' current labels, one project, a two-label choice. Issues with little or no text are more likely to get no suggestion. Treat it as an aid, not an authority. Full method and limits: the Calibration Report.
+- On 440 closed issues from one open-source app (MedTimer, bug versus enhancement), the suggested label agreed with the maintainers' about 95 to 98% of the time when it answered. On three other projects it agreed 72 to 93% (83% pooled over 319 issues), and on one of them it scored below always guessing the most common label. Almost every disagreement was the model calling an issue a bug that the maintainers had called an enhancement. Ground truth is the maintainers' current labels, and it is a two-label choice. Issues with little or no text are more likely to get no suggestion. Treat it as an aid, not an authority. Full method and limits: the Calibration Report.
 
 ## Troubleshooting
 | You see | Cause and fix |
