@@ -390,9 +390,15 @@ def run_stats(ledger: Ledger, result: ActionResult, threshold: float = 0.0) -> s
         if "withheld_label" in response:
             parts.insert(0, f"withheld '{response['withheld_label']}' (below the confidence threshold)")
         else:
-            parts.insert(0, "the model chose to abstain")
+            reason = " ".join(str(response.get("reason") or "").replace("`", "'").split())[:300]
+            parts.insert(0, f"the model chose to abstain ({reason})" if reason else "the model chose to abstain")
     confidence = response.get("confidence")
-    parts.append("confidence not reported" if confidence is None else f"confidence {confidence:.2f}")
+    if confidence is not None:
+        parts.append(f"confidence {confidence:.2f}")
+    elif run_rec and run_rec.status == RunStatus.ABSTAINED:
+        parts.append("no confidence (abstained)")
+    else:
+        parts.append("confidence not reported")
     if threshold > 0.0:
         parts.append(f"threshold {threshold:.2f}")
     return "; ".join(parts) + "."
