@@ -1,0 +1,10 @@
+{
+ "repo": "external-eval",
+ "note": "Arm B of prereg-external-replication.md: the four labels a stranger following the Install Guide would typically offer, GitHub's stock descriptions.",
+ "labels": [
+  {"name": "bug", "description": "Something isn't working"},
+  {"name": "enhancement", "description": "New feature or request"},
+  {"name": "documentation", "description": "Improvements or additions to documentation"},
+  {"name": "question", "description": "Further information is requested"}
+ ]
+}
