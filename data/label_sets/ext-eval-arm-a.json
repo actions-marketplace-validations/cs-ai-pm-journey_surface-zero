@@ -1,0 +1,8 @@
+{
+ "repo": "external-eval",
+ "note": "Arm A of prereg-external-replication.md: bug and enhancement only, GitHub's stock descriptions, same two choices as the MedTimer calibration.",
+ "labels": [
+  {"name": "bug", "description": "Something isn't working"},
+  {"name": "enhancement", "description": "New feature or request"}
+ ]
+}

@@ -18,7 +18,7 @@ inputs:
     required: false
     default: ''
   confidence-threshold:
-    description: 'From 0 to 1. The advisor reports how likely a maintainer would choose its label; below this value it posts nothing and records an abstention. 0 (default) always posts. In testing a higher value did not help enough to recommend: see the Install Guide.'
+    description: 'From 0 to 1. The advisor reports how likely a maintainer would choose its label; below this value it posts nothing and records an abstention. 0 (default) always posts. Whether a higher value helps depends on the project: see the Install Guide.'
     required: false
     default: '0'
   duplicates:
@@ -30,9 +30,9 @@ inputs:
     required: false
     default: 'false'
   dry-run:
-    description: 'If true, runs the advisor and records its suggestion but posts nothing. Recommended for the first run.'
+    description: 'Default true: runs the advisor and records its suggestion but posts nothing. Set to false to post comments.'
     required: false
-    default: 'false'
+    default: 'true'
 
 outputs:
   result:
